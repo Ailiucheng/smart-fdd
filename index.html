@@ -2612,9 +2612,13 @@
                 <div class="nav-section">
                     <div class="nav-section-title" data-i18n="nav.analysis">Analysis</div>
                     <!-- R22: Graph Review nav removed per feedback #16 -->
-                    <div class="nav-item" onclick="switchTab('rules')" data-tooltip="Rules">
+                    <div class="nav-item" onclick="switchTab('rules')" data-tooltip="Rules & AI Prediction">
                         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
                         <span class="nav-item-text" data-i18n="nav.rules">Rules</span>
+                    </div>
+                    <div class="nav-item" onclick="switchTab('aiPrediction')" data-tooltip="AI Prediction">
+                        <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"></path><path d="M2 17l10 5 10-5"></path><path d="M2 12l10 5 10-5"></path></svg></span>
+                        <span class="nav-item-text" data-i18n="nav.aiPrediction">AI Prediction</span>
                     </div>
 
                     <div class="nav-item" onclick="switchTab('vibration')" data-tooltip="Vibration">
@@ -2763,6 +2767,10 @@
                     <span class="l2-filter-chip" data-type="Chiller" onclick="l2FilterType('Chiller',this)">Chiller</span>
                     <span class="l2-filter-chip" data-type="FCU" onclick="l2FilterType('FCU',this)">FCU</span>
                     <span class="l2-filter-chip" data-type="VAV" onclick="l2FilterType('VAV',this)">VAV</span>
+                    <span style="margin-left:auto;display:flex;gap:4px;">
+                        <span class="l2-filter-chip" onclick="l2ExpandAll()" style="cursor:pointer;font-size:10px;">&#9660; Expand</span>
+                        <span class="l2-filter-chip" onclick="l2CollapseAll()" style="cursor:pointer;font-size:10px;">&#9654; Collapse</span>
+                    </span>
                 </div>
                 <!-- Results info -->
                 <div class="l2-results-info" id="l2ResultsInfo"></div>
@@ -3991,6 +3999,10 @@
                 <!-- ========== #9: AI PREDICTION PAGE ========== -->
                 <div id="page-aiPrediction" class="page-section">
                     <div class="breadcrumb"><a href="#" onclick="switchTab('overview')">Home</a> <span class="sep">&#8250;</span> Analysis <span class="sep">&#8250;</span> AI Prediction</div>
+                    <div style="display:flex; gap:4px; margin-bottom:16px;">
+                        <button class="btn btn-secondary btn-sm rules-subtab-btn" id="rulesSubtabRuleBtn2" onclick="switchRulesSubtab('ruleAnalysis')">Rule-Based Fault Analysis</button>
+                        <button class="btn btn-primary btn-sm rules-subtab-btn active" id="rulesSubtabAiBtn2" onclick="switchRulesSubtab('aiPrediction')">AI Model Prediction</button>
+                    </div>
                     <div style="display:flex; justify-content:flex-end; margin-bottom:12px;"><button class="page-export-btn" onclick="alert('Export report (placeholder)')">Export Report</button></div>
                     
                     <!-- Prediction Rule Analysis — Select devices & rules to view charts -->
@@ -6439,46 +6451,87 @@
     var l2State = { open: false, filter: 'all', search: '', selectedEquip: null };
 
     // Comprehensive equipment data model
+    // Comprehensive equipment data model (R28: expanded for scalability demo)
     var l2EquipmentData = [
         { building: 'Block G', color: '#009999', floors: [
             { name: 'Level 7', equips: [
                 { id: 'AHU-703', type: 'AHU', score: 62, status: 'danger', vavs: ['VAV-703-1','VAV-703-2','VAV-703-3','VAV-703-4'] },
                 { id: 'AHU-707', type: 'AHU', score: 78, status: 'warning', vavs: ['VAV-707-1','VAV-707-2','VAV-707-3'] },
-                { id: 'AHU-712', type: 'AHU', score: 95, status: 'good', vavs: ['VAV-712-1','VAV-712-2'] }
+                { id: 'AHU-712', type: 'AHU', score: 95, status: 'good', vavs: ['VAV-712-1','VAV-712-2'] },
+                { id: 'FCU-G701', type: 'FCU', score: 90, status: 'good', vavs: [] },
+                { id: 'FCU-G702', type: 'FCU', score: 87, status: 'good', vavs: [] },
+                { id: 'FCU-G703', type: 'FCU', score: 93, status: 'good', vavs: [] },
+                { id: 'FCU-G704', type: 'FCU', score: 91, status: 'good', vavs: [] }
             ]},
             { name: 'Level 3', equips: [
                 { id: 'AHU-303', type: 'AHU', score: 91, status: 'good', vavs: ['VAV-303-1','VAV-303-2'] },
-                { id: 'FCU-B301', type: 'FCU', score: 88, status: 'good', vavs: [] }
+                { id: 'FCU-B301', type: 'FCU', score: 88, status: 'good', vavs: [] },
+                { id: 'FCU-B302', type: 'FCU', score: 94, status: 'good', vavs: [] },
+                { id: 'FCU-B303', type: 'FCU', score: 96, status: 'good', vavs: [] },
+                { id: 'FCU-B304', type: 'FCU', score: 85, status: 'warning', vavs: [] },
+                { id: 'FCU-B305', type: 'FCU', score: 92, status: 'good', vavs: [] }
             ]},
             { name: 'Level 13', equips: [
                 { id: 'AHU-1301', type: 'AHU', score: 94, status: 'good', vavs: ['VAV-1301-1','VAV-1301-2'] },
-                { id: 'AHU-1305', type: 'AHU', score: 91, status: 'good', vavs: ['VAV-1305-1'] }
+                { id: 'AHU-1305', type: 'AHU', score: 91, status: 'good', vavs: ['VAV-1305-1'] },
+                { id: 'FCU-G1301', type: 'FCU', score: 98, status: 'good', vavs: [] },
+                { id: 'FCU-G1302', type: 'FCU', score: 97, status: 'good', vavs: [] }
+            ]},
+            { name: 'Level 15', equips: [
+                { id: 'AHU-1501', type: 'AHU', score: 89, status: 'warning', vavs: ['VAV-1501-1','VAV-1501-2'] },
+                { id: 'FCU-G1501', type: 'FCU', score: 93, status: 'good', vavs: [] },
+                { id: 'FCU-G1502', type: 'FCU', score: 91, status: 'good', vavs: [] },
+                { id: 'FCU-G1503', type: 'FCU', score: 95, status: 'good', vavs: [] }
             ]}
         ]},
         { building: 'Block S', color: '#F59E0B', floors: [
             { name: 'Level 5', equips: [
-                { id: 'AHU-501', type: 'AHU', score: 97, status: 'good', vavs: ['VAV-501-1','VAV-501-2','VAV-501-3'] },
-                { id: 'AHU-502', type: 'AHU', score: 93, status: 'good', vavs: ['VAV-502-1'] }
+                { id: 'AHU-501', type: 'AHU', score: 85, status: 'warning', vavs: ['VAV-501-1','VAV-501-2'] },
+                { id: 'AHU-503', type: 'AHU', score: 93, status: 'good', vavs: ['VAV-503-1'] },
+                { id: 'FCU-S501', type: 'FCU', score: 90, status: 'good', vavs: [] },
+                { id: 'FCU-S502', type: 'FCU', score: 88, status: 'good', vavs: [] },
+                { id: 'FCU-S503', type: 'FCU', score: 94, status: 'good', vavs: [] }
             ]},
             { name: 'Level 9', equips: [
                 { id: 'AHU-901', type: 'AHU', score: 89, status: 'good', vavs: ['VAV-901-1','VAV-901-2'] },
-                { id: 'FCU-B901', type: 'FCU', score: 96, status: 'good', vavs: [] }
+                { id: 'FCU-S901', type: 'FCU', score: 97, status: 'good', vavs: [] },
+                { id: 'FCU-S902', type: 'FCU', score: 96, status: 'good', vavs: [] },
+                { id: 'FCU-S903', type: 'FCU', score: 94, status: 'good', vavs: [] },
+                { id: 'FCU-S904', type: 'FCU', score: 92, status: 'good', vavs: [] },
+                { id: 'FCU-S905', type: 'FCU', score: 95, status: 'good', vavs: [] }
+            ]},
+            { name: 'Level 11', equips: [
+                { id: 'AHU-1101', type: 'AHU', score: 88, status: 'good', vavs: ['VAV-1101-1','VAV-1101-2'] },
+                { id: 'FCU-S1101', type: 'FCU', score: 91, status: 'good', vavs: [] },
+                { id: 'FCU-S1102', type: 'FCU', score: 93, status: 'good', vavs: [] },
+                { id: 'FCU-S1103', type: 'FCU', score: 96, status: 'good', vavs: [] },
+                { id: 'FCU-S1104', type: 'FCU', score: 89, status: 'good', vavs: [] }
             ]}
         ]},
         { building: 'Plant Room', color: '#3B82F6', floors: [
             { name: 'Ground Floor', equips: [
                 { id: 'CH-CH-001', type: 'Chiller', score: 98, status: 'good', vavs: [] },
                 { id: 'CH-CH-002', type: 'Chiller', score: 96, status: 'good', vavs: [] },
-                { id: 'CWP-001', type: 'Chiller', score: 99, status: 'good', vavs: [] }
+                { id: 'CWP-001', type: 'Chiller', score: 99, status: 'good', vavs: [] },
+                { id: 'CWP-002', type: 'Chiller', score: 97, status: 'good', vavs: [] },
+                { id: 'CT-001', type: 'Chiller', score: 94, status: 'good', vavs: [] },
+                { id: 'HWP-001', type: 'Chiller', score: 95, status: 'good', vavs: [] }
             ]}
         ]},
         { building: 'Ambulatory', color: '#8B5CF6', floors: [
             { name: 'Level 1', equips: [
                 { id: 'AHU-A01', type: 'AHU', score: 94, status: 'good', vavs: ['VAV-A01-1','VAV-A01-2'] },
-                { id: 'FCU-A101', type: 'FCU', score: 97, status: 'good', vavs: [] }
+                { id: 'FCU-A101', type: 'FCU', score: 97, status: 'good', vavs: [] },
+                { id: 'FCU-A102', type: 'FCU', score: 95, status: 'good', vavs: [] },
+                { id: 'FCU-A103', type: 'FCU', score: 93, status: 'good', vavs: [] },
+                { id: 'FCU-A104', type: 'FCU', score: 91, status: 'good', vavs: [] }
             ]},
             { name: 'Level 2', equips: [
-                { id: 'AHU-A02', type: 'AHU', score: 92, status: 'good', vavs: ['VAV-A02-1'] }
+                { id: 'AHU-A02', type: 'AHU', score: 92, status: 'good', vavs: ['VAV-A02-1'] },
+                { id: 'FCU-A201', type: 'FCU', score: 96, status: 'good', vavs: [] },
+                { id: 'FCU-A202', type: 'FCU', score: 94, status: 'good', vavs: [] },
+                { id: 'FCU-A203', type: 'FCU', score: 90, status: 'good', vavs: [] },
+                { id: 'FCU-A204', type: 'FCU', score: 98, status: 'good', vavs: [] }
             ]}
         ]}
     ];
@@ -6636,8 +6689,34 @@
             resultsInfo.textContent = matchCount + ' result' + (matchCount !== 1 ? 's' : '') + ' found';
             resultsInfo.classList.add('visible');
         } else {
-            resultsInfo.classList.remove('visible');
+            // Show total equipment count
+            var totalEq = 0;
+            l2EquipmentData.forEach(function(b) { b.floors.forEach(function(fl) { totalEq += fl.equips.length; }); });
+            resultsInfo.textContent = totalEq + ' equipment units across ' + l2EquipmentData.length + ' buildings';
+            resultsInfo.classList.add('visible');
         }
+    }
+
+    // Expand all / Collapse all for L2 tree
+    function l2ExpandAll() {
+        document.querySelectorAll('.tree-children').forEach(function(el) { el.style.display = 'block'; });
+        document.querySelectorAll('.tree-arrow').forEach(function(el) {
+            el.classList.add('open');
+            el.innerHTML = '&#9660;';
+        });
+    }
+    function l2CollapseAll() {
+        document.querySelectorAll('.tree-children').forEach(function(el) { el.style.display = 'none'; });
+        document.querySelectorAll('.tree-arrow').forEach(function(el) {
+            el.classList.remove('open');
+            el.innerHTML = '&#9654;';
+        });
+        // Keep buildings expanded
+        document.querySelectorAll('.tree-building > .tree-children').forEach(function(el) { el.style.display = 'block'; });
+        document.querySelectorAll('.tree-building > .tree-row > .tree-arrow').forEach(function(el) {
+            el.classList.add('open');
+            el.innerHTML = '&#9660;';
+        });
     }
 
     // Toggle tree node expand/collapse
@@ -6716,15 +6795,33 @@
         renderL2Tree();
     });
 
-    // ===== RULES SUB-TAB SYSTEM =====
+    // ===== RULES SUB-TAB SYSTEM (R28: proper page switching) =====
     function switchRulesSubtab(tab) {
+        // Toggle button styles on BOTH Rules page and AI Prediction page sub-tab buttons
         document.querySelectorAll('.rules-subtab-btn').forEach(function(b) { b.classList.remove('active'); b.className = b.className.replace('btn-primary', 'btn-secondary'); });
+        var ruleBtn = document.getElementById('rulesSubtabRuleBtn');
+        var aiBtn = document.getElementById('rulesSubtabAiBtn');
         if (tab === 'ruleAnalysis') {
-            document.getElementById('rulesSubtabRuleBtn').classList.add('active');
-            document.getElementById('rulesSubtabRuleBtn').className = document.getElementById('rulesSubtabRuleBtn').className.replace('btn-secondary', 'btn-primary');
+            if (ruleBtn) { ruleBtn.classList.add('active'); ruleBtn.className = ruleBtn.className.replace('btn-secondary', 'btn-primary'); }
         } else {
-            document.getElementById('rulesSubtabAiBtn').classList.add('active');
-            document.getElementById('rulesSubtabAiBtn').className = document.getElementById('rulesSubtabAiBtn').className.replace('btn-secondary', 'btn-primary');
+            if (aiBtn) { aiBtn.classList.add('active'); aiBtn.className = aiBtn.className.replace('btn-secondary', 'btn-primary'); }
+        }
+        // Navigate to the correct page
+        if (tab === 'ruleAnalysis') {
+            // Show Rules, hide AI Prediction
+            var rulesPage = document.getElementById('page-rules');
+            var aiPage = document.getElementById('page-aiPrediction');
+            if (rulesPage) { rulesPage.style.display = 'block'; rulesPage.classList.add('active'); }
+            if (aiPage) { aiPage.style.display = 'none'; aiPage.classList.remove('active'); }
+            if (typeof drawRuleTrend === 'function') { setTimeout(drawRuleTrend, 100); }
+        } else {
+            // Show AI Prediction, hide Rules
+            var rulesPage = document.getElementById('page-rules');
+            var aiPage = document.getElementById('page-aiPrediction');
+            if (aiPage) { aiPage.style.display = 'block'; aiPage.classList.add('active'); }
+            if (rulesPage) { rulesPage.style.display = 'none'; rulesPage.classList.remove('active'); }
+            if (typeof drawPredictionChart === 'function') { setTimeout(drawPredictionChart, 100); }
+            if (typeof drawTopology === 'function') { setTimeout(drawTopology, 100); }
         }
     }
 
@@ -6946,7 +7043,7 @@
         'ahu-sensors': 'graph',   // sidebar AHU links go to graph view
         'vibration': 'vibration',  // sidebar sensor links go to vibration analysis page
         'rules': 'rules',
-        'aiPrediction': 'rules',
+        'aiPrediction': 'aiPrediction',
         'activities': 'activities',
         'reports': 'reports',
         'operatorCenter': 'operatorCenter',
