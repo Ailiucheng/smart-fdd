@@ -2538,19 +2538,10 @@
                         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg></span>
                         <span class="nav-item-text" data-i18n="nav.dashboard">Dashboard</span>
                     </div>
-                    <div class="nav-item" onclick="switchTab('health');toggleNavDevices('healthDevices')" data-tooltip="Equipment Health">
+                    <div class="nav-item" onclick="switchTab('health');" data-tooltip="Equipment Health">
                         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg></span>
                         <span class="nav-item-text" data-i18n="nav.health">Equipment Health</span>
-                        <span class="nav-expand-arrow" onclick="event.stopPropagation();toggleNavDevices('healthDevices')" style="margin-left:auto;font-size:10px;color:var(--text-muted);cursor:pointer;">&#9662;</span>
-                    </div>
-                    <div id="healthDevices" class="nav-sub-list" style="display:none;">
-                        <div class="nav-sub-item" onclick="switchTab('details','AHU-703')"><span class="health-dot danger"></span> AHU-703</div>
-                        <div class="nav-sub-item" onclick="switchTab('details','AHU-707')"><span class="health-dot warning"></span> AHU-707</div>
-                        <div class="nav-sub-item" onclick="switchTab('details','AHU-1301')"><span class="health-dot good"></span> AHU-1301</div>
-                        <div class="nav-sub-item" onclick="switchTab('details','AHU-1305')"><span class="health-dot good"></span> AHU-1305</div>
-                        <div class="nav-sub-item" onclick="switchTab('details','CH-CH-001')"><span class="health-dot good"></span> CH-CH-001</div>
-                        <div class="nav-sub-item" onclick="switchTab('details','CH-CH-002')"><span class="health-dot good"></span> CH-CH-002</div>
-                    </div>
+
                 </div>
 
                 <div class="nav-section">
@@ -2732,44 +2723,7 @@
                 <div id="page-overview" class="page-section active">
                     <div class="breadcrumb"><a href="#" onclick="switchTab('overview')">Home</a> <span class="sep">&#8250;</span> Event List</div>
                     <div style="display:flex; justify-content:flex-end; margin-bottom:12px;"><button class="page-export-btn" onclick="alert('Export report (placeholder)')">Export Report</button></div>
-                                        <!-- R20 #7b: Building Health Map on Overview page -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 class="card-title">Building Health Overview <span style="font-size:11px; color:var(--text-muted); font-weight:400;">— Quick status across all floors</span></h3>
-                            <button class="btn btn-secondary btn-sm" onclick="switchTab('health')">View Full Map →</button>
-                        </div>
-                        <div class="card-body" style="padding:16px;">
-                            <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
-                                <div style="background:var(--danger-bg); border:1px solid var(--danger); border-radius:8px; padding:12px; text-align:center;">
-                                    <div style="font-size:18px; font-weight:700; color:var(--danger);">2</div>
-                                    <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">7F Critical</div>
-                                    <div style="font-size:10px; color:var(--text-light);">AHU-703/707</div>
-                                </div>
-                                <div style="background:var(--warning-bg); border:1px solid var(--warning); border-radius:8px; padding:12px; text-align:center;">
-                                    <div style="font-size:18px; font-weight:700; color:var(--warning);">1</div>
-                                    <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">7F Warning</div>
-                                    <div style="font-size:10px; color:var(--text-light);">AHU-707</div>
-                                </div>
-                                <div style="background:var(--success-bg); border:1px solid var(--success); border-radius:8px; padding:12px; text-align:center;">
-                                    <div style="font-size:18px; font-weight:700; color:var(--success);">4</div>
-                                    <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">13F Normal</div>
-                                    <div style="font-size:10px; color:var(--text-light);">AHU-1301/1305</div>
-                                </div>
-                                <div style="background:var(--success-bg); border:1px solid var(--success); border-radius:8px; padding:12px; text-align:center;">
-                                    <div style="font-size:18px; font-weight:700; color:var(--success);">2</div>
-                                    <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Plant Normal</div>
-                                    <div style="font-size:10px; color:var(--text-light);">CH-001/002</div>
-                                </div>
-                                <div style="background:var(--info-bg); border:1px solid var(--info); border-radius:8px; padding:12px; text-align:center;">
-                                    <div style="font-size:18px; font-weight:700; color:var(--info);">12</div>
-                                    <div style="font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Total Units</div>
-                                    <div style="font-size:10px; color:var(--text-light);">All floors</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-<!-- Action Buttons -->
+                                        <!-- Action Buttons -->
                     <div style="margin-bottom: 20px; display: flex; gap: 12px;">
                         <button class="btn btn-primary alert-flash-btn" id="btnDataCollection" onclick="toggleFlowDiagram()">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2852,11 +2806,7 @@
                                         <span style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Occurred (Detected)</span>
                                         <span style="font-size:9px; color:var(--danger); font-weight:600;">(18 urgent)</span>
                                     </div>
-                                    <div style="width:1px; height:36px; background:var(--border);"></div>
-<div style="display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer;" onclick="switchTab('details', 'AHU-703')" title="Go to Details">
-                                        <span style="font-size:26px; font-weight:700; color:var(--danger); line-height:1.0; letter-spacing:-0.4px;">8</span>
-                                        <span style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Urgent Alerts</span>
-                                    </div>
+                                    
                             </div>
                         </div>
                     </div>
@@ -2887,8 +2837,8 @@
                                 <label style="display:flex; align-items:center; gap:4px; font-size:12px; margin-left:8px;"><input type="checkbox" id="showResolvedCheck" checked onchange="toggleResolvedEvents()"> Show Resolved</label>
                                 </div>
                                 <div class="filter-tabs" id="eventFilterTabs">
-                                    <div class="filter-tab active" data-source="rule" onclick="setEventFilter(this, 'rule')"><span data-i18n="filter.rule">Rule-Based</span> <span class="count">89</span></div>
-                                    <div class="filter-tab" data-source="ai" onclick="setEventFilter(this, 'ai')"><span data-i18n="filter.ai">AI Model</span> <span class="count">47</span></div>
+                                    <div class="filter-tab active" data-source="rule" onclick="setEventFilter(this, 'rule')"><span data-i18n="filter.rule">Occurred (Detected)</span> <span class="count">89</span></div>
+                                    <div class="filter-tab" data-source="ai" onclick="setEventFilter(this, 'ai')"><span data-i18n="filter.ai">AI Prediction</span> <span class="count">47</span></div>
                                 </div>
                                 <div class="color-legend-bar compact" style="margin-left:8px;">
                                     <div class="color-legend-bar-item"><div class="color-legend-bar-dot" style="background:var(--danger-bg); border:1px solid var(--danger);"></div><span class="color-legend-bar-label">Critical</span></div>
@@ -2939,70 +2889,70 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr class="event-row-clickable" onclick="switchTab('details', 'AHU-703')" style="cursor:pointer;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-703</a></td><td>AHU</td><td>Level 7</td><td>23</td>
+                                    <tr class="event-row-clickable" data-src="rule" onclick="switchTab('rules', 'AHU-703')" style="cursor:pointer;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-703</a></td><td>AHU</td><td>Level 7</td><td>23</td>
                                         <td>8</td><td>7</td><td>4</td><td><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--danger-bg);color:var(--danger);margin-right:2px;">Downtime</span><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--warning-bg);color:var(--warning);">Comfort</span></td>
                                         <td><span class="severity-badge severity-critical">Critical</span></td>
                                         <td>Ward</td><td>3/day</td><td>4h 20m</td>
                                     </tr>
-                                    <tr class="event-row-clickable" onclick="switchTab('details', 'AHU-707')" style="cursor:pointer;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-707</a></td><td>AHU</td><td>Level 7</td><td>18</td>
+                                    <tr class="event-row-clickable" data-src="ai" onclick="switchTab('aiPrediction', 'AHU-707')" style="cursor:pointer;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-707</a></td><td>AHU</td><td>Level 7</td><td>18</td>
                                         <td>5</td><td>6</td><td>4</td><td><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--warning-bg);color:var(--warning);">Comfort</span><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--success-bg);color:var(--success);margin-left:2px;">Energy</span></td>
                                         <td><span class="severity-badge severity-warning">Low</span></td>
                                         <td>Ward</td><td>2/day</td><td>2h 10m</td>
                                     </tr>
-                                    <tr class="event-row-clickable" onclick="switchTab('details', 'AHU-1301')" style="cursor:pointer;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-1301</a></td><td>AHU</td><td>Level 13</td><td>12</td>
+                                    <tr class="event-row-clickable" data-src="rule" onclick="switchTab('rules', 'AHU-1301')" style="cursor:pointer;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-1301</a></td><td>AHU</td><td>Level 13</td><td>12</td>
                                         <td>3</td><td>5</td><td>2</td><td><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--danger-bg);color:var(--danger);">Downtime</span></td>
                                         <td><span class="severity-badge severity-info">Low</span></td>
                                         <td>ICU</td><td>1/day</td><td>1h 30m</td>
                                     </tr>
-                                    <tr class="event-row-clickable" onclick="switchTab('details', 'CH-CH-001')" style="cursor:pointer;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">CH-CH-001</a></td><td>Chiller</td><td>Plant Room</td><td>5</td>
+                                    <tr class="event-row-clickable" data-src="rule" onclick="switchTab('rules', 'CH-CH-001')" style="cursor:pointer;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">CH-CH-001</a></td><td>Chiller</td><td>Plant Room</td><td>5</td>
                                         <td>1</td><td>2</td><td>1</td><td><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--success-bg);color:var(--success);">Energy</span></td>
                                         <td><span class="severity-badge severity-info">Low</span></td>
                                         <td>Plant</td><td>0/day</td><td>45m</td>
                                     </tr>
-                                    <tr class="event-row-clickable" onclick="switchTab('details', 'AHU-1305')" style="cursor:pointer;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-1305</a></td><td>AHU</td><td>Level 13</td><td>8</td>
+                                    <tr class="event-row-clickable" data-src="ai" onclick="switchTab('aiPrediction', 'AHU-1305')" style="cursor:pointer;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-1305</a></td><td>AHU</td><td>Level 13</td><td>8</td>
                                         <td>2</td><td>3</td><td>2</td><td><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--warning-bg);color:var(--warning);">Comfort</span></td>
                                         <td><span class="severity-badge severity-info">Low</span></td>
                                         <td>Ward</td><td>1/day</td><td>55m</td>
                                     </tr>
                                     <!-- Additional events (only visible in 'All' time range) -->
-                                    <tr class="event-row-clickable" onclick="switchTab('details', 'AHU-703')" style="cursor:pointer;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-703</a></td><td>AHU</td><td>Level 7</td><td>15</td>
+                                    <tr class="event-row-clickable" data-src="rule" onclick="switchTab('rules', 'AHU-703')" style="cursor:pointer;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-703</a></td><td>AHU</td><td>Level 7</td><td>15</td>
                                         <td>4</td><td>5</td><td>3</td><td><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--warning-bg);color:var(--warning);">Comfort</span></td>
                                         <td><span class="severity-badge severity-info">Low</span></td>
                                         <td>Ward</td><td>1/day</td><td>2h 45m</td>
                                     </tr>
-                                    <tr class="event-row-clickable" onclick="switchTab('details', 'CH-CH-002')" style="cursor:pointer;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">CH-CH-002</a></td><td>Chiller</td><td>Plant Room</td><td>3</td>
+                                    <tr class="event-row-clickable" data-src="rule" onclick="switchTab('rules', 'CH-CH-002')" style="cursor:pointer;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">CH-CH-002</a></td><td>Chiller</td><td>Plant Room</td><td>3</td>
                                         <td>1</td><td>1</td><td>1</td><td><span style="font-size:10px;padding:2px 6px;border-radius:10px;background:var(--success-bg);color:var(--success);">Energy</span></td>
                                         <td><span class="severity-badge severity-info">Low</span></td>
                                         <td>Plant</td><td>0/day</td><td>35m</td>
                                     </tr>
-                                    <tr class="event-row-clickable" onclick="switchTab('details', 'AHU-707')" style="cursor:pointer;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-707</a></td><td>AHU</td><td>Level 7</td><td>10</td>
+                                    <tr class="event-row-clickable" data-src="ai" onclick="switchTab('aiPrediction', 'AHU-707')" style="cursor:pointer;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-707</a></td><td>AHU</td><td>Level 7</td><td>10</td>
                                         <td>2</td><td>4</td><td>2</td><td><span class="severity-badge severity-info">Low</span></td>
                                         <td>Ward</td><td>1/day</td><td>1h 50m</td>
                                     </tr>
 
                                     <!-- Resolved Events -->
-                                    <tr class="event-row-clickable event-resolved-row" onclick="switchTab('details', 'AHU-1301')" style="cursor:pointer; opacity:0.65;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-1301</a></td><td>AHU</td><td>Level 13</td><td>0</td>
+                                    <tr class="event-row-clickable" data-src="rule" event-resolved-row" onclick="switchTab('rules', 'AHU-1301')" style="cursor:pointer; opacity:0.65;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-1301</a></td><td>AHU</td><td>Level 13</td><td>0</td>
                                         <td>0</td><td>0</td><td>0</td><td></td>
                                         <td><span class="severity-badge" style="background:var(--success-bg);color:var(--success);">Resolved</span></td>
                                         <td>ICU</td><td>-</td><td>-</td>
                                     </tr>
-                                    <tr class="event-row-clickable event-resolved-row" onclick="switchTab('details', 'AHU-705')" style="cursor:pointer; opacity:0.65;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-705</a></td><td>AHU</td><td>Level 7</td><td>0</td>
+                                    <tr class="event-row-clickable" data-src="rule" event-resolved-row" onclick="switchTab('rules', 'AHU-705')" style="cursor:pointer; opacity:0.65;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">AHU-705</a></td><td>AHU</td><td>Level 7</td><td>0</td>
                                         <td>0</td><td>0</td><td>0</td><td></td>
                                         <td><span class="severity-badge" style="background:var(--success-bg);color:var(--success);">Resolved</span></td>
                                         <td>Ward</td><td>-</td><td>-</td>
                                     </tr>
-                                    <tr class="event-row-clickable event-resolved-row" onclick="switchTab('details', 'CH-CH-001')" style="cursor:pointer; opacity:0.65;">
-                                        <td><a href="#" onclick="event.stopPropagation();switchTab('devices')" style="color:var(--accent);font-weight:600;text-decoration:none;">CH-CH-001</a></td><td>Chiller</td><td>Plant Room</td><td>0</td>
+                                    <tr class="event-row-clickable" data-src="rule" event-resolved-row" onclick="switchTab('rules', 'CH-CH-001')" style="cursor:pointer; opacity:0.65;">
+                                        <td><a href="#" onclick="event.stopPropagation();switchTab('rules')" style="color:var(--accent);font-weight:600;text-decoration:none;">CH-CH-001</a></td><td>Chiller</td><td>Plant Room</td><td>0</td>
                                         <td>0</td><td>0</td><td>0</td><td></td>
                                         <td><span class="severity-badge" style="background:var(--success-bg);color:var(--success);">Resolved</span></td>
                                         <td>Plant</td><td>-</td><td>-</td>
@@ -5932,8 +5882,8 @@
         document.querySelectorAll('.tree-equip.selected').forEach(function(el) { el.classList.remove('selected'); });
         var selected = document.querySelector('[data-eq-id="' + eqId + '"]');
         if (selected) selected.classList.add('selected');
-        // Navigate to details page
-        switchTab('details', eqId);
+        // Navigate to Rules page (0601 #19: no more details page)
+        switchTab('rules', eqId);
         // Close panel on mobile or after selection
         if (window.innerWidth < 1024) {
             toggleL2Panel();
@@ -6032,7 +5982,7 @@
             'card.events': 'Event List', 'card.monthly': 'Monthly Event Distribution',
             'chart.trend60': '60-Minute Sensor Trends - AHU-703', 'ai.title': 'AI Model Performance',
             'ai.thinkingTitle': 'AI Thinking Process', 'ai.thinkingDesc': 'Select a rule above to filter. Click on a fault node to see explanation and correlated faults. Drag the diagram to reposition.',
-            'filter.all': 'All', 'filter.rule': 'Rule-Based', 'filter.ai': 'AI Detected',
+            'filter.all': 'All', 'filter.rule': 'Occurred (Detected)', 'filter.ai': 'AI Prediction',
             'filter.allFloors': 'All Floors', 'filter.allEquip': 'All Equipment',
             'filter.allPriority': 'All Priority', 'filter.allTime': 'All Time', 'filter.reset': 'Reset',
             'th.id': 'ID', 'th.time': 'Time', 'th.fault': 'Fault', 'th.equip': 'Equipment',
@@ -6097,7 +6047,7 @@
             'card.events': '事件列表', 'card.monthly': '月度事件分布',
             'chart.trend60': 'AHU-703 60分钟传感器趋势', 'ai.title': 'AI模型性能',
             'ai.thinkingTitle': 'AI思考过程', 'ai.thinkingDesc': '点击故障节点以高亮关联故障并筛选建议操作',
-            'filter.all': '全部', 'filter.rule': '规则检测', 'filter.ai': 'AI检测',
+            'filter.all': '全部', 'filter.rule': '已侦测（已发生）', 'filter.ai': 'AI预测',
             'filter.allFloors': '全部楼层', 'filter.allEquip': '全部设备',
             'filter.allPriority': '全部优先级', 'filter.allTime': '全部时间', 'filter.reset': '重置',
             'th.id': '编号', 'th.time': '时间', 'th.fault': '故障', 'th.equip': '设备',
@@ -6403,6 +6353,30 @@
             if (arrow) arrow.textContent = '▶';
         }
     }
+
+    // R30: Handle device context navigation (0601 #19)
+    // When navigating to rules/aiPrediction with a deviceId, show device-specific analysis
+    var _lastSwitchDeviceId = null;
+    var _origSwitchTab = switchTab;
+    switchTab = function(tabKey, deviceId) {
+        _lastSwitchDeviceId = deviceId || null;
+        _origSwitchTab(tabKey, deviceId);
+        if (deviceId) {
+            var headerTitle = document.querySelector('.header-title');
+            if (headerTitle) {
+                var pageLabel = tabKey === 'aiPrediction' ? 'AI Prediction' : 'Rules';
+                headerTitle.textContent = deviceId + ' \u2014 ' + pageLabel + ' Analysis';
+            }
+            setTimeout(function() {
+                var sel = document.querySelector('#rulesDeviceSelect') || document.querySelector('#dashDeviceSelect');
+                if (sel) {
+                    for (var i = 0; i < sel.options.length; i++) {
+                        if (sel.options[i].value === deviceId) { sel.value = deviceId; sel.dispatchEvent(new Event('change')); break; }
+                    }
+                }
+            }, 100);
+        }
+    };
 
     // ── Rule Calculator ──
     var ruleThresholds = {
@@ -7815,21 +7789,21 @@
     // timeRange: '24h'=last 24 hours only, 'week'=within this week, 'all'=all time
     var eventSourceData = {
         'all': [
-            { equip:'AHU-703', system:'AHU', loc:'Level 7', fc:23, m:8, o:7, e:4, p:4, urg:'Critical', svc:'Ward', freq:'3.2/day', dur:'4h 20m', src:'rule', timeRange:'24h', desc:'SAT 32.5\u00B0C exceeds threshold of 28\u00B0C for 23 minutes.', recs:['Inspect cooling coil for fouling or refrigerant leak.','Verify CHW supply temperature and flow rate from chiller plant.','Check HVS valve actuator position and calibration.','Review BMS trending data for concurrent anomalies.'] },
-            { equip:'AHU-707', system:'AHU', loc:'Level 7', fc:18, m:5, o:6, e:4, p:3, urg:'Low', svc:'Ward', freq:'1.8/day', dur:'2h 10m', src:'ai', timeRange:'24h', desc:'SAT 26.2\u00B0C approaching warning threshold. Multiple sensors trending high.', recs:['Schedule preventive maintenance for cooling coil.','Monitor HVS valve position trend over 48 hours.','Check filter differential pressure and replace if >200Pa.','Verify supply air duct insulation integrity.'] },
-            { equip:'AHU-1301', system:'AHU', loc:'Level 13', fc:12, m:3, o:5, e:2, p:2, urg:'Low', svc:'ICU', freq:'0.9/day', dur:'1h 30m', src:'rule', timeRange:'week', desc:'Fan bearing replaced. Vibration returned to normal.', recs:['Continue monitoring vibration levels for 72 hours post-repair.','Inspect belt tension and alignment on quarterly PM schedule.','Record bearing model and replacement date in CMMS.','Evaluate remaining bearing life using vibration trend data.'] },
+            { equip:'AHU-703', system:'AHU', loc:'Level 7', fc:23, m:8, o:7, e:4, p:4, urg:'Critical', svc:'Ward', freq:'3/day', dur:'4h 20m', src:'rule', timeRange:'24h', desc:'SAT 32.5\u00B0C exceeds threshold of 28\u00B0C for 23 minutes.', recs:['Inspect cooling coil for fouling or refrigerant leak.','Verify CHW supply temperature and flow rate from chiller plant.','Check HVS valve actuator position and calibration.','Review BMS trending data for concurrent anomalies.'] },
+            { equip:'AHU-707', system:'AHU', loc:'Level 7', fc:18, m:5, o:6, e:4, p:3, urg:'Low', svc:'Ward', freq:'2/day', dur:'2h 10m', src:'ai', timeRange:'24h', desc:'SAT 26.2\u00B0C approaching warning threshold. Multiple sensors trending high.', recs:['Schedule preventive maintenance for cooling coil.','Monitor HVS valve position trend over 48 hours.','Check filter differential pressure and replace if >200Pa.','Verify supply air duct insulation integrity.'] },
+            { equip:'AHU-1301', system:'AHU', loc:'Level 13', fc:12, m:3, o:5, e:2, p:2, urg:'Low', svc:'ICU', freq:'1/day', dur:'1h 30m', src:'rule', timeRange:'week', desc:'Fan bearing replaced. Vibration returned to normal.', recs:['Continue monitoring vibration levels for 72 hours post-repair.','Inspect belt tension and alignment on quarterly PM schedule.','Record bearing model and replacement date in CMMS.','Evaluate remaining bearing life using vibration trend data.'] },
             { equip:'CH-CH-001', system:'Chiller', loc:'Plant Room', fc:5, m:1, o:2, e:1, p:1, urg:'Low', svc:'Plant', freq:'0.4/day', dur:'45m', src:'ai', timeRange:'week', desc:'COP trending below design baseline. Condenser approach temperature slightly elevated.', recs:['Monitor COP trend and compare to chiller performance curves.','Check condenser approach temperature for tube fouling.','Verify condenser water flow rate and cooling tower performance.','Inspect compressor oil level and refrigerant charge.'] },
-            { equip:'AHU-1305', system:'AHU', loc:'Level 13', fc:8, m:2, o:3, e:2, p:1, urg:'Low', svc:'Ward', freq:'0.6/day', dur:'55m', src:'ai', timeRange:'week', desc:'Intermittent damper actuator fault detected on outdoor air damper.', recs:['Inspect damper actuators for mechanical binding or wear.','Check outdoor air damper position sensor calibration.','Clean or replace damper linkage if excessive play detected.','Schedule functional performance test (FPT) for VAV system.'] },
-            { equip:'AHU-703', system:'AHU', loc:'Level 7', fc:15, m:4, o:5, e:3, p:3, urg:'Low', svc:'Ward', freq:'1.2/day', dur:'2h 45m', src:'rule', timeRange:'all', desc:'Low humidity detected in ward area. Humidifier maintenance required.', recs:['Check humidifier water supply and drain.','Inspect steam canister for scale buildup.','Verify humidity sensor calibration.','Adjust humidifier control setpoint.'] },
-            { equip:'CH-CH-002', system:'Chiller', loc:'Plant Room', fc:3, m:1, o:1, e:1, p:0, urg:'Low', svc:'Plant', freq:'0.3/day', dur:'35m', src:'rule', timeRange:'all', desc:'CHW supply temperature deviation detected. Potential flow imbalance.', recs:['Verify CHW pump speed and flow rate.','Check balancing valve positions.','Inspect strainers for blockage.','Compare supply/return temperature differential.'] },
-            { equip:'AHU-707', system:'AHU', loc:'Level 7', fc:10, m:2, o:4, e:2, p:2, urg:'Low', svc:'Ward', freq:'0.8/day', dur:'1h 50m', src:'ai', timeRange:'all', desc:'CO2 sensor drift detected. Calibration overdue by 45 days.', recs:['Schedule CO2 sensor calibration.','Compare CO2 readings with portable reference meter.','Check sensor placement for airflow obstruction.','Update calibration record in CMMS.'] }
+            { equip:'AHU-1305', system:'AHU', loc:'Level 13', fc:8, m:2, o:3, e:2, p:1, urg:'Low', svc:'Ward', freq:'1/day', dur:'55m', src:'ai', timeRange:'week', desc:'Intermittent damper actuator fault detected on outdoor air damper.', recs:['Inspect damper actuators for mechanical binding or wear.','Check outdoor air damper position sensor calibration.','Clean or replace damper linkage if excessive play detected.','Schedule functional performance test (FPT) for VAV system.'] },
+            { equip:'AHU-703', system:'AHU', loc:'Level 7', fc:15, m:4, o:5, e:3, p:3, urg:'Low', svc:'Ward', freq:'1/day', dur:'2h 45m', src:'rule', timeRange:'all', desc:'Low humidity detected in ward area. Humidifier maintenance required.', recs:['Check humidifier water supply and drain.','Inspect steam canister for scale buildup.','Verify humidity sensor calibration.','Adjust humidifier control setpoint.'] },
+            { equip:'CH-CH-002', system:'Chiller', loc:'Plant Room', fc:3, m:1, o:1, e:1, p:0, urg:'Low', svc:'Plant', freq:'0/day', dur:'35m', src:'rule', timeRange:'all', desc:'CHW supply temperature deviation detected. Potential flow imbalance.', recs:['Verify CHW pump speed and flow rate.','Check balancing valve positions.','Inspect strainers for blockage.','Compare supply/return temperature differential.'] },
+            { equip:'AHU-707', system:'AHU', loc:'Level 7', fc:10, m:2, o:4, e:2, p:2, urg:'Low', svc:'Ward', freq:'1/day', dur:'1h 50m', src:'ai', timeRange:'all', desc:'CO2 sensor drift detected. Calibration overdue by 45 days.', recs:['Schedule CO2 sensor calibration.','Compare CO2 readings with portable reference meter.','Check sensor placement for airflow obstruction.','Update calibration record in CMMS.'] }
         ]
     };
     // Add rule-only and ai-only subsets
     eventSourceData['rule'] = eventSourceData['all'].filter(function(e) { return e.src === 'rule'; });
     eventSourceData['ai'] = eventSourceData['all'].filter(function(e) { return e.src === 'ai'; });
 
-    var currentEventFilter = 'all';
+    var currentEventFilter = 'rule';
 
     function setEventFilter(el, source) {
         currentEventFilter = source;
