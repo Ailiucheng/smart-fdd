@@ -246,10 +246,6 @@
         @media (max-width:900px) { .scores-breakdown-panel { grid-template-columns:1fr; } }
         .progress-bar-track { height:8px; background:var(--border-light); border-radius:4px; overflow:hidden; }
         .progress-bar-fill { height:100%; border-radius:4px; transition:width 0.5s ease; }
-        .priority-action { display:flex; align-items:flex-start; gap:10px; padding:10px; border-radius:8px; }
-        .priority-action.critical { background:var(--danger-bg); border-left:3px solid var(--danger); }
-        .priority-action.warning { background:var(--warning-bg); border-left:3px solid var(--warning); }
-        .priority-action.info { background:var(--info-bg); border-left:3px solid var(--info); }
         @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
 
         .edit-btn {
@@ -270,7 +266,7 @@
         .nav-sub-item:hover .edit-btn { display: flex; }
 
         /* Main Content */
-        .main-content { flex: 1; margin-left: 260px; min-height: 100vh; overflow-x: auto; max-width: calc(100vw - 260px); }
+        .main-content { flex: 1; margin-left: 260px; min-height: 100vh; overflow-x: auto; }
 
         /* Top Header */
         .top-header {
@@ -820,62 +816,6 @@
         .color-legend-bar-dot.round { border-radius: 50%; }
         .color-legend-bar-label { white-space: nowrap; }
 
-        /* Event Detail Expand Row */
-        .event-detail-row { display: none; }
-        .event-detail-row.open { display: table-row; }
-        .event-detail-content {
-            padding: 16px 20px;
-            background: var(--bg);
-            border-left: 3px solid var(--accent);
-        }
-        .event-detail-section { margin-bottom: 12px; }
-        .event-detail-section:last-child { margin-bottom: 0; }
-        .event-detail-label {
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-        }
-        .event-detail-text { font-size: 13px; color: var(--text-light); line-height: 1.6; }
-        .event-detail-recs { list-style: none; padding: 0; margin: 0; }
-        .event-detail-recs li {
-            padding: 8px 12px;
-            margin-bottom: 6px;
-            background: var(--white);
-            border-radius: var(--radius-xs);
-            font-size: 13px;
-            color: var(--text);
-            border-left: 3px solid var(--accent);
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-        .event-detail-recs li .rec-num {
-            background: var(--accent);
-            color: white;
-            font-size: 11px;
-            font-weight: 600;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .event-detail-link { margin-top: 12px; }
-        .event-row-clickable { cursor: pointer; transition: background 0.15s; }
-        .event-row-clickable:hover { background: var(--bg) !important; }
-        .event-row-clickable .expand-icon {
-            display: inline-block;
-            transition: transform 0.2s;
-            font-size: 10px;
-            color: var(--text-muted);
-            margin-right: 6px;
-        }
-        .event-row-clickable.expanded .expand-icon { transform: rotate(90deg); }
 
         /* Health Tree Map */
         .health-tree-map {
@@ -1772,6 +1712,9 @@
             font-weight: 600;
             color: var(--petrol);
         }
+
+        .device-sidebar-search input:focus { border-color: var(--accent); }
+
         .device-sidebar-item {
             padding: 12px 16px;
             cursor: pointer;
@@ -2283,6 +2226,7 @@
             transition: transform 0.25s ease, opacity 0.25s ease;
         }
         .l2-nav-panel.open { display: flex; }
+        .main-content.l2-open { margin-left: 560px !important; max-width: none; width: auto; overflow-x: auto; }
         .l2-header {
             padding: 14px 16px 10px;
             background: var(--white);
@@ -2523,7 +2467,7 @@
         .l2-empty-state.visible { display: block; }
         .l2-empty-icon { font-size: 28px; margin-bottom: 8px; opacity: 0.4; }
         /* Main content margin when L2 is open */
-        .main-content.l2-open { margin-left: 560px !important; }
+        .main-content.l2-open { margin-left: 560px !important; max-width: none; width: auto; }
 </style>
 </head>
 <body>
@@ -2611,8 +2555,7 @@
 
                 <div class="nav-section">
                     <div class="nav-section-title" data-i18n="nav.analysis">Analysis</div>
-                    <!-- R22: Graph Review nav removed per feedback #16 -->
-                    <div class="nav-item" onclick="switchTab('rules')" data-tooltip="Rules & AI Prediction">
+                                        <div class="nav-item" onclick="switchTab('rules')" data-tooltip="Rules & AI Prediction">
                         <span class="nav-item-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></span>
                         <span class="nav-item-text" data-i18n="nav.rules">Rules</span>
                     </div>
@@ -3246,427 +3189,8 @@
                     </div>
                 </div>
 
-                <!-- ========== GRAPH VIEW PAGE ========== -->
-                <div id="page-health" class="page-section">
-                    <!-- R18: Breadcrumb -->
-                    <div class="breadcrumb"><a href="#" onclick="switchTab('overview')">Home</a> <span class="sep">&#8250;</span> Monitoring <span class="sep">&#8250;</span> Equipment Health</div>
-                    <div style="display:flex; justify-content:flex-end; margin-bottom:12px;"><button class="page-export-btn" onclick="alert('Export report (placeholder)')">Export Report</button></div>
-
-                    
-                    <button class="abbr-toggle" onclick="this.classList.toggle('open');var g=this.nextElementSibling;g.classList.toggle('collapsed');this.querySelector('.arrow').style.transform=this.classList.contains('open')?'rotate(180deg)':''"><span class="arrow">▼</span> Abbreviations</button>
-                    <div class="abbr-glossary collapsed">
-                        <span style="font-weight:700; color:var(--text-light);">Abbreviations:</span>
-                        <span><strong>COP</strong> = Coefficient of Performance</span>
-                        <span><strong>SAT</strong> = Supply Air Temperature</span>
-                        <span><strong>AHU</strong> = Air Handling Unit</span>
-                        <span><strong>CHW</strong> = Chilled Water</span>
-                        <span><strong>HVS</strong> = Heating Valve Stroke</span>
-                    </div>
-                    <!-- R18: Device search box — above the map for quick filtering -->
-                    <div style="margin-bottom:16px; display:flex; gap:12px; align-items:center;">
-                        <input type="text" id="deviceSearchInput" placeholder="Search devices..." style="padding:8px 14px; border:1px solid var(--border); border-radius:8px; font-size:13px; width:280px;" oninput="filterDeviceList(this.value)">
-                        <select id="deviceEventFilter" style="padding:8px 14px; border:1px solid var(--border); border-radius:8px; font-size:13px;" onchange="filterDeviceByEvent(this.value)">
-                            <option value="all">All Events</option>
-                            <option value="critical">Critical Events</option>
-                            <option value="warning">Warning Events</option>
-                            <option value="resolved">Resolved Events</option>
-                        </select>
-                    </div>
-                    <!-- #6: Dynamic building map with collapsible floors -->
-                    <div class="health-map">
-                        <div class="health-map-header">
-                            <div class="health-map-title" data-i18n="health.mapTitle">Building Health Overview</div>
-                            <div class="health-legend">
-                                <div class="health-legend-item"><div class="health-legend-dot good"></div><span data-i18n="health.good">Good</span></div>
-                                <div class="health-legend-item"><div class="health-legend-dot warning"></div><span data-i18n="health.warn">Warning</span></div>
-                                <div class="health-legend-item"><div class="health-legend-dot danger"></div><span data-i18n="health.crit">Critical</span></div>
-                            </div>
-                        </div>
-                        <div class="health-tree-map">
-                            <div class="tree-map-root">
-                                <!-- Root: Hospital -->
-                                <div class="tree-node root" onclick="toggleTreeNode(this)"><span id="treeMapBuildingName">Princess Margaret Hospital</span><span class="score-dot good">92</span></div>
-                                <div class="tree-connector-v"></div>
-                                <!-- Level 1: Blocks + Plant -->
-                                <div class="tree-branch-row tree-children">
-                                    <div class="tree-branch-col">
-                                        <div class="tree-node" onclick="toggleTreeNode(this)"><span class="tree-toggle">&#9660;</span>Block G<span class="score-dot warning">76</span></div>
-                                        <div class="tree-connector-v"></div>
-                                        <!-- Level 2: Floor -->
-                                        <div class="tree-branch-col tree-children">
-                                            <div class="tree-node" onclick="toggleTreeNode(this)"><span class="tree-toggle">&#9660;</span>Floor 7<span class="score-dot warning">76</span></div>
-                                            <div class="tree-connector-v"></div>
-                                            <!-- Level 3: Equipment -->
-                                            <div class="tree-leaf-group tree-children">
-                                                <div class="tree-leaf">
-                                                    <div class="tree-leaf-node danger" onclick="switchTab('devices')">AHU 703<span class="score-dot danger">47</span></div>
-                                                    <span style="font-size:11px;color:var(--text-muted);">SAT 32.5C</span>
-                                                </div>
-                                                <div class="tree-leaf">
-                                                    <div class="tree-leaf-node warning" onclick="switchTab('devices')">AHU 707<span class="score-dot warning">68</span></div>
-                                                    <span style="font-size:11px;color:var(--text-muted);">SAT 26.2C</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-branch-col">
-                                        <div class="tree-node" onclick="toggleTreeNode(this)"><span class="tree-toggle">&#9660;</span>Block S<span class="score-dot good">94</span></div>
-                                        <div class="tree-connector-v"></div>
-                                        <!-- Level 2: Floor -->
-                                        <div class="tree-branch-col tree-children">
-                                            <div class="tree-node" onclick="toggleTreeNode(this)"><span class="tree-toggle">&#9660;</span>Floor 13<span class="score-dot good">94</span></div>
-                                            <div class="tree-connector-v"></div>
-                                            <!-- Level 3: Equipment -->
-                                            <div class="tree-leaf-group tree-children">
-                                                <div class="tree-leaf">
-                                                    <div class="tree-leaf-node good" onclick="switchTab('devices')">AHU 1301<span class="score-dot good">94</span></div>
-                                                    <span style="font-size:11px;color:var(--text-muted);">SAT 23.8C</span>
-                                                </div>
-                                                <div class="tree-leaf">
-                                                    <div class="tree-leaf-node good" onclick="switchTab('devices')">AHU 1305<span class="score-dot good">91</span></div>
-                                                    <span style="font-size:11px;color:var(--text-muted);">SAT 24.1C</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tree-branch-col">
-                                        <div class="tree-node good" onclick="toggleTreeNode(this)"><span class="tree-toggle">&#9660;</span>Plant Room<span class="score-dot good">95</span></div>
-                                        <div class="tree-connector-v"></div>
-                                        <!-- Level 2: Equipment (no floor for plant room) -->
-                                        <div class="tree-leaf-group tree-children">
-                                            <div class="tree-leaf">
-                                                <div class="tree-leaf-node good" onclick="switchTab('devices')">CH-CH-001<span class="score-dot good">96</span></div>
-                                                <span style="font-size:11px;color:var(--text-muted);">COP 5.82</span>
-                                            </div>
-                                            <div class="tree-leaf">
-                                                <div class="tree-leaf-node good" onclick="switchTab('devices')">CH-CH-002<span class="score-dot good">95</span></div>
-                                                <span style="font-size:11px;color:var(--text-muted);">COP 5.71</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <p style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:16px;">Click on a block/floor/plant to expand/collapse. Click on a device to view details.</p>
-                        </div>
-                    </div>
-
-                    <!-- R20 #6: Device Score Trend Chart (from AI Prediction) -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 class="card-title">Device Score Trend <span style="font-size:11px; color:var(--text-muted); font-weight:400;">— Overall health scores across equipment</span></h3>
-                            <select id="healthTrendRange" style="padding:4px 10px; border:1px solid var(--border); border-radius:6px; font-size:12px; background:var(--white);" onchange="drawHealthTrendChart()">
-                                <option value="7d">7 Days</option>
-                                <option value="30d">30 Days</option>
-                                <option value="90d">90 Days</option>
-                                <option value="1y">1 Year</option>
-                            </select>
-                        </div>
-                        <div class="card-body" style="padding:16px;">
-                            <canvas id="healthTrendChart" height="200" style="width:100%;"></canvas>
-                            <div style="display:flex; gap:16px; margin-top:8px; flex-wrap:wrap;">
-                                <span style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:#EF4444; display:inline-block; border-radius:2px;"></span> AHU-703</span>
-                                <span style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:#F59E0B; display:inline-block; border-radius:2px;"></span> AHU-707</span>
-                                <span style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:#22C55E; display:inline-block; border-radius:2px;"></span> AHU-1301</span>
-                                <span style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:#3B82F6; display:inline-block; border-radius:2px;"></span> AHU-1305</span>
-                                <span style="font-size:11px; color:var(--text-muted); display:flex; align-items:center; gap:4px;"><span style="width:12px; height:3px; background:#8B5CF6; display:inline-block; border-radius:2px;"></span> CH-CH-001</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- R18 #18: KPI Scores on Equipment Health page -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-body" style="padding:16px 28px;">
-                            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:20px;">
-                                <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
-                                    <div style="display:flex; align-items:baseline; gap:4px;">
-                                        <span style="font-size:28px; font-weight:700; color:var(--success); line-height:1.0; letter-spacing:-1px;">84</span>
-                                        <span style="font-size:13px; color:var(--text-muted); font-weight:500; align-self:flex-end; padding-bottom:4px;">%</span>
-                                        <span style="font-size:11px; color:var(--success); font-weight:600; align-self:flex-end; padding-bottom:4px;">&#8593;3%</span>
-                                    </div>
-                                    <span style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Health Score</span>
-                                </div>
-                                <div style="width:1px; height:36px; background:var(--border);"></div>
-                                <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
-                                    <div style="display:flex; align-items:baseline; gap:4px;">
-                                        <span style="font-size:28px; font-weight:700; color:var(--danger); line-height:1.0; letter-spacing:-1px;">7</span>
-                                        <span style="font-size:11px; color:var(--danger); font-weight:600; align-self:flex-end; padding-bottom:4px;">active</span>
-                                    </div>
-                                    <span style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Active Faults</span>
-                                </div>
-                                <div style="width:1px; height:36px; background:var(--border);"></div>
-                                <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
-                                    <div style="display:flex; align-items:baseline; gap:4px;">
-                                        <span style="font-size:28px; font-weight:700; color:var(--petrol); line-height:1.0; letter-spacing:-1px;">96</span>
-                                        <span style="font-size:13px; color:var(--text-muted); font-weight:500; align-self:flex-end; padding-bottom:4px;">%</span>
-                                    </div>
-                                    <span style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Compliance</span>
-                                </div>
-                                <div style="width:1px; height:36px; background:var(--border);"></div>
-                                <div style="display:flex; flex-direction:column; align-items:center; gap:2px;">
-                                    <div style="display:flex; align-items:baseline; gap:4px;">
-                                        <span style="font-size:28px; font-weight:700; color:var(--accent); line-height:1.0; letter-spacing:-1px;">99.7</span>
-                                        <span style="font-size:13px; color:var(--text-muted); font-weight:500; align-self:flex-end; padding-bottom:4px;">%</span>
-                                        <span style="font-size:11px; color:var(--success); font-weight:600; align-self:flex-end; padding-bottom:4px;">&#8593;0.2%</span>
-                                    </div>
-                                    <span style="font-size:10px; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:1px;">Availability</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- R18: KPI Scores at top of Equipment Health — Donut ring charts -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 class="card-title">Score Breakdown</h3>
-                            <span style="font-size:11px; color:var(--text-muted);">Good ≥80 &nbsp;·&nbsp; Fair 60–80 &nbsp;·&nbsp; Poor &lt;60</span>
-                        </div>
-                        <div class="card-body" style="padding:16px 20px;">
-                            <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:0; align-items:center;">
-                                <!-- Overall -->
-                                <div style="display:flex; flex-direction:column; align-items:center; padding:12px; gap:8px;">
-                                    <svg width="80" height="80" viewBox="0 0 80 80">
-                                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="8"/>
-                                        <circle cx="40" cy="40" r="32" fill="none" stroke="#22C55E" stroke-width="8"
-                                            stroke-dasharray="183 201" stroke-linecap="round"
-                                            transform="rotate(-90 40 40)"/>
-                                        <text x="40" y="44" text-anchor="middle" font-size="18" font-weight="700" fill="#22C55E" font-family="Inter,sans-serif">92</text>
-                                    </svg>
-                                    <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Overall</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">8/36 triggered</div>
-                                </div>
-                                <!-- Maintenance -->
-                                <div style="display:flex; flex-direction:column; align-items:center; padding:12px; gap:8px; border-left:1px solid var(--border);">
-                                    <svg width="80" height="80" viewBox="0 0 80 80">
-                                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="8"/>
-                                        <circle cx="40" cy="40" r="32" fill="none" stroke="#22C55E" stroke-width="8"
-                                            stroke-dasharray="182 201" stroke-linecap="round"
-                                            transform="rotate(-90 40 40)"/>
-                                        <text x="40" y="44" text-anchor="middle" font-size="18" font-weight="700" fill="#22C55E" font-family="Inter,sans-serif">91</text>
-                                    </svg>
-                                    <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Maintenance</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">3/12 triggered</div>
-                                </div>
-                                <!-- Energy -->
-                                <div style="display:flex; flex-direction:column; align-items:center; padding:12px; gap:8px; border-left:1px solid var(--border);">
-                                    <svg width="80" height="80" viewBox="0 0 80 80">
-                                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="8"/>
-                                        <circle cx="40" cy="40" r="32" fill="none" stroke="#F59E0B" stroke-width="8"
-                                            stroke-dasharray="157 201" stroke-linecap="round"
-                                            transform="rotate(-90 40 40)"/>
-                                        <text x="40" y="44" text-anchor="middle" font-size="18" font-weight="700" fill="#F59E0B" font-family="Inter,sans-serif">78</text>
-                                    </svg>
-                                    <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Energy</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">6/14 triggered</div>
-                                </div>
-                                <!-- Comfort -->
-                                <div style="display:flex; flex-direction:column; align-items:center; padding:12px; gap:8px; border-left:1px solid var(--border);">
-                                    <svg width="80" height="80" viewBox="0 0 80 80">
-                                        <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="8"/>
-                                        <circle cx="40" cy="40" r="32" fill="none" stroke="#22C55E" stroke-width="8"
-                                            stroke-dasharray="171 201" stroke-linecap="round"
-                                            transform="rotate(-90 40 40)"/>
-                                        <text x="40" y="44" text-anchor="middle" font-size="18" font-weight="700" fill="#22C55E" font-family="Inter,sans-serif">85</text>
-                                    </svg>
-                                    <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Comfort</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">4/10 triggered</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                    <!-- R18-P7: Equipment Health Score Trend (Rule-based) (from AI Prediction) -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                            <h3 class="card-title">Equipment Health Score Trend (Rule-based)</h3>
-                            <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
-                                <span style="font-size:11px; color:var(--text-muted);">Rule:</span>
-                                <select id="healthTrendRuleSelect" style="padding:5px 10px; border:1px solid var(--border); border-radius:6px; font-size:12px;" onchange="updateHealthTrendChart()">
-                                    <option value="all">All Rules</option>
-                                    <option value="R001">R001 — High SAT</option>
-                                    <option value="R002">R002 — High CO2</option>
-                                    <option value="R003">R003 — High Vibration</option>
-                                    <option value="R004">R004 — Low COP</option>
-                                    <option value="R005">R005 — HVS Stuck</option>
-                                    <option value="R006">R006 — Damper Fault</option>
-                                    <option value="R007">R007 — Condenser Approach</option>
-                                </select>
-                                <span style="font-size:11px; color:var(--text-muted);">Devices:</span>
-                                <select id="healthTrendDeviceSelect" style="padding:5px 10px; border:1px solid var(--border); border-radius:6px; font-size:12px;" onchange="updateHealthTrendChart()">
-                                    <option value="all">All Equipment</option>
-                                    <option value="AHU-703">AHU-703</option>
-                                    <option value="AHU-707">AHU-707</option>
-                                    <option value="AHU-1301">AHU-1301</option>
-                                    <option value="AHU-1305">AHU-1305</option>
-                                    <option value="CH-001">CH-CH-001</option>
-                                    <option value="CH-002">CH-CH-002</option>
-                                </select>
-                                <span style="font-size:11px; color:var(--text-muted);">Period:</span>
-                                <select id="healthTrendTimeSelect" style="padding:5px 10px; border:1px solid var(--border); border-radius:6px; font-size:12px;" onchange="updateHealthTrendChart()">
-                                    <option value="24h">24 Hours</option>
-                                    <option value="7d" selected>7 Days</option>
-                                    <option value="30d">30 Days</option>
-                                    <option value="90d">90 Days</option>
-                                    <option value="180d">180 Days</option>
-                                    <option value="365d">365 Days</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div style="position:relative;">
-                                <div style="position:absolute; left:-8px; top:50%; transform:translateY(-50%) rotate(-90deg); font-size:10px; color:var(--text-muted); white-space:nowrap;">Overall Score</div>
-                                <div style="margin-left:20px;">
-                                    <canvas id="health-trend-canvas" height="200" style="width:100%; height:200px;"></canvas>
-                                </div>
-                            </div>
-                            <div style="text-align:right; font-size:10px; color:var(--text-muted); margin-top:4px;">Time</div>
-                        </div>
-                    </div>
-
-                    
-                    <!-- Priority Actions -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-header"><h3 class="card-title">Priority Actions</h3></div>
-                        <div class="card-body" style="padding:16px;">
-                            <div style="display:flex; flex-direction:column; gap:12px;">
-                                <div class="priority-action critical">
-                                    <div style="width:14px;height:14px;border-radius:50%;background:var(--danger);flex-shrink:0;"></div>
-                                    <div>
-                                        <div style="font-weight:600; font-size:13px;">AHU-703 CCV Fault</div>
-                                        <div style="font-size:12px; color:var(--text-light);">Cooling coil valve stuck open &middot; 4d 18h</div>
-                                    </div>
-                                </div>
-                                <div class="priority-action warning">
-                                    <div style="width:14px;height:14px;border-radius:50%;background:var(--warning);flex-shrink:0;"></div>
-                                    <div>
-                                        <div style="font-weight:600; font-size:13px;">AHU-707 SAT Sensor Drift</div>
-                                        <div style="font-size:12px; color:var(--text-light);">Supply air temp sensor bias &middot; 2d 5h</div>
-                                    </div>
-                                </div>
-                                <div class="priority-action info">
-                                    <div style="width:14px;height:14px;border-radius:50%;background:var(--info);flex-shrink:0;"></div>
-                                    <div>
-                                        <div style="font-weight:600; font-size:13px;">CH-CH-001 COP Declining</div>
-                                        <div style="font-size:12px; color:var(--text-light);">Chiller efficiency below threshold &middot; 6h</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                    <!-- R18-P3: Rule Comparison Panel -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                            <h3 class="card-title">Most Frequent Faults</h3>
-                            <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-                                <span style="font-size:11px; color:var(--text-muted);">Compare rules:</span>
-                                <label style="display:flex; align-items:center; gap:3px; font-size:12px; background:var(--bg); padding:4px 10px; border-radius:6px; cursor:pointer; border:2px solid var(--accent); font-weight:600;">
-                                    <input type="checkbox" checked onchange="drawRuleComparison()"> FMC-AH-SAT-01
-                                </label>
-                                <label style="display:flex; align-items:center; gap:3px; font-size:12px; background:var(--bg); padding:4px 10px; border-radius:6px; cursor:pointer; border:2px solid transparent;">
-                                    <input type="checkbox" onchange="drawRuleComparison()"> FMC-AH-CWV-02
-                                </label>
-                                <label style="display:flex; align-items:center; gap:3px; font-size:12px; background:var(--bg); padding:4px 10px; border-radius:6px; cursor:pointer; border:2px solid transparent;">
-                                    <input type="checkbox" onchange="drawRuleComparison()"> FMC-AH-FAN-03
-                                </label>
-                                <label style="display:flex; align-items:center; gap:3px; font-size:12px; background:var(--bg); padding:4px 10px; border-radius:6px; cursor:pointer; border:2px solid transparent;">
-                                    <input type="checkbox" onchange="drawRuleComparison()"> FMC-AH-MAT-04
-                                </label>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div style="position:relative;">
-                                <div class="chart-y-label">Trigger Count</div>
-                                <canvas id="rule-comparison-canvas" height="180" style="width:100%; height:180px;"></canvas>
-                            </div>
-                            <div style="margin-top:8px; font-size:11px; color:var(--text-muted);">Select rules above to compare trigger trends side-by-side. Each line represents a different rule's trigger frequency over time.</div>
-                        </div>
-                    </div>
-
-
-
-                    <!-- Prioritized Equipment -->
-                    <div class="card" style="margin-top: 24px;">
-                        <div class="card-header">
-                            <h3 class="card-title">Prioritized Equipment</h3>
-                            <div style="font-size:12px; color:var(--text-muted);">Sorted by health score ascending — lowest health first</div>
-                        </div>
-                        <div class="card-body" style="padding: 0; overflow-x: auto;">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Equipment</th>
-                                        <th>Type</th>
-                                        <th>System</th>
-                                        <th>Health</th>
-                                        <th>Triggered Rules</th>
-                                        <th>Applied Rules</th>
-                                        <th>Trend</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td style="font-weight:600;">AHU-703</td>
-                                        <td>Air Handling Unit</td>
-                                        <td>Block G / Floor 7</td>
-                                        <td><span class="score-dot-sm danger">47%</span></td>
-                                        <td><span style="color:var(--danger); font-weight:600;">4</span></td>
-                                        <td>8</td>
-                                        <td style="color:var(--danger);font-weight:600;">&#9660; Down</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight:600;">AHU-707</td>
-                                        <td>Air Handling Unit</td>
-                                        <td>Block G / Floor 7</td>
-                                        <td><span class="score-dot-sm warning">68%</span></td>
-                                        <td><span style="color:var(--warning); font-weight:600;">2</span></td>
-                                        <td>8</td>
-                                        <td style="color:var(--danger);font-weight:600;">&#9660; Down</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight:600;">AHU-1305</td>
-                                        <td>Air Handling Unit</td>
-                                        <td>Block S / Floor 13</td>
-                                        <td><span class="score-dot-sm good">91%</span></td>
-                                        <td>1</td>
-                                        <td>6</td>
-                                        <td style="color:var(--text-muted);">→ Stable</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight:600;">AHU-1301</td>
-                                        <td>Air Handling Unit</td>
-                                        <td>Block S / Floor 13</td>
-                                        <td><span class="score-dot-sm good">94%</span></td>
-                                        <td>0</td>
-                                        <td>6</td>
-                                        <td style="color:var(--text-muted);">→ Stable</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight:600;">CH-CH-002</td>
-                                        <td>Chiller</td>
-                                        <td>Plant Room</td>
-                                        <td><span class="score-dot-sm good">95%</span></td>
-                                        <td>0</td>
-                                        <td>4</td>
-                                        <td style="color:var(--text-muted);">→ Stable</td>
-                                    </tr>
-                                    <tr>
-                                        <td style="font-weight:600;">CH-CH-001</td>
-                                        <td>Chiller</td>
-                                        <td>Plant Room</td>
-                                        <td><span class="score-dot-sm good">96%</span></td>
-                                        <td>0</td>
-                                        <td>4</td>
-                                        <td style="color:var(--text-muted);">→ Stable</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ========== RULES PAGE ========== -->
+                
+<!-- ========== RULES PAGE ========== -->
                 <div id="page-rules" class="page-section">
                     <div class="breadcrumb"><a href="#" onclick="switchTab('overview')">Home</a> <span class="sep">&#8250;</span> Analysis <span class="sep">&#8250;</span> Rules</div>
                     <div style="display:flex; gap:4px; margin-bottom:16px;">
@@ -3976,15 +3500,6 @@
                                         <div style="display:flex; justify-content:space-between;"><span>Drift Score</span><span style="font-weight:600; color:var(--success);">0.03</span></div>
                                     </div>
                                 </div>
-                                <!-- Priority Actions -->
-                                <div style="padding:10px; background:var(--warning-bg); border-radius:var(--radius-xs); margin-bottom:12px; border-left:3px solid var(--warning);">
-                                    <div style="font-weight:600; color:#92400E; margin-bottom:6px;">Priority Actions</div>
-                                    <div style="color:var(--text-light); line-height:1.6;">
-                                        <div style="margin-bottom:4px;">1. AHU-703 SAT fault (FMC: 8.5)</div>
-                                        <div style="margin-bottom:4px;">2. AHU-707 HVS anomaly (FMC: 6.2)</div>
-                                        <div>3. CH-001 COP trend (FMC: 4.1)</div>
-                                    </div>
-                                </div>
                                 <!-- Quick Links -->
                                 <div style="padding:8px; background:var(--bg); border-radius:var(--radius-xs);">
                                     <div style="font-weight:600; margin-bottom:6px; color:var(--text-muted);">Quick Links</div>
@@ -4124,6 +3639,9 @@
                     <div class="ai-prediction-layout">
                         <!-- Device Selection Sidebar -->
                         <div class="device-sidebar">
+                            <div class="device-sidebar-search" style="padding:8px 12px; border-bottom:1px solid var(--border);">
+                                <input type="text" class="device-search-input" placeholder="Search equipment..." style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:6px; font-size:12px; outline:none;" oninput="filterDeviceSidebar(this.value)">
+                            </div>
                             <div class="device-sidebar-header">Equipment</div>
                             <div class="device-sidebar-item active" onclick="selectPredictionDevice(this, 'AHU-703')">
                                 <span class="dsi-dot" style="background:var(--success)"></span>
@@ -4560,353 +4078,8 @@
                     </div>
                 </div>
 
-                <!-- ========== DETAILS PAGE ========== -->
-                <div id="page-details" class="page-section">
-                    <div class="breadcrumb"><a href="#" onclick="switchTab('overview')">Event List</a> <span class="sep">&#8250;</span> <span id="detailDeviceBreadcrumb">AHU-703</span> <span class="sep">&#8250;</span> Fault Detail</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                        <button class="btn btn-secondary" onclick="switchTab('overview')" style="font-size:12px;">← Back to Event List</button>
-                        <button class="page-export-btn" onclick="alert('Export report (placeholder)')">Export Report</button>
-                    </div>
-                    
-                    <!-- Fault Detail Form Card removed per Round 18 req: E-log only in Operator Center -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-body" style="padding:14px 24px;">
-                            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
-<div style="display:flex; align-items:center; gap:6px;">
-                                        <span style="font-size:12px; color:var(--text-muted);">Equipment</span>
-                                        <span style="font-size:18px; font-weight:700; ">AHU-703</span>
-                                    </div>
-                                    <div style="width:1px; height:20px; background:var(--border);"></div>
-<div style="display:flex; align-items:center; gap:6px;">
-                                        <span style="font-size:12px; color:var(--text-muted);">Location</span>
-                                        <span style="font-size:18px; font-weight:700; ">Level 7</span>
-                                    </div>
-                                    <div style="width:1px; height:20px; background:var(--border);"></div>
-<div style="display:flex; align-items:center; gap:6px;">
-                                        <span style="font-size:12px; color:var(--text-muted);">Health Score</span>
-                                        <span style="font-size:18px; font-weight:700; color:var(--success);">92</span>
-                                    </div>
-                                    <div style="width:1px; height:20px; background:var(--border);"></div>
-<div style="display:flex; align-items:center; gap:6px;">
-                                        <span style="font-size:12px; color:var(--text-muted);">Status</span>
-                                        <span style="font-size:18px; font-weight:700; color:var(--success);">Online</span>
-                                    </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    
-                    <!-- Recommendations Section -->
-                    <div class="card" style="margin-bottom:20px;">
-                        <div class="card-header"><h3 class="card-title">Recommendations</h3></div>
-                        <div class="card-body" style="padding:16px;">
-                            <div style="display:flex; flex-direction:column; gap:10px;">
-                                <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--accent);">
-                                    <div style="width:24px;height:24px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">1</div>
-                                    <div><div style="font-weight:600; font-size:13px;">Inspect cooling coil for fouling or refrigerant leak</div><div style="font-size:12px; color:var(--text-light);">Source: FMC-AH-SAT-01 (Rule-Based) · Confidence: 94%</div></div>
-                                </div>
-                                <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--accent);">
-                                    <div style="width:24px;height:24px;border-radius:50%;background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">2</div>
-                                    <div><div style="font-weight:600; font-size:13px;">Verify CHW supply temperature and flow rate from chiller plant</div><div style="font-size:12px; color:var(--text-light);">Source: FMC-AH-SAT-01 (Rule-Based) · Confidence: 88%</div></div>
-                                </div>
-                                <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--info);">
-                                    <div style="width:24px;height:24px;border-radius:50%;background:var(--info);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">3</div>
-                                    <div><div style="font-weight:600; font-size:13px;">Check HVS valve actuator position and calibration</div><div style="font-size:12px; color:var(--text-light);">Source: AI Model · Confidence: 91%</div></div>
-                                </div>
-                                <div style="display:flex; align-items:flex-start; gap:10px; padding:10px 14px; background:var(--bg-secondary); border-radius:8px; border-left:3px solid var(--info);">
-                                    <div style="width:24px;height:24px;border-radius:50%;background:var(--info);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;">4</div>
-                                    <div><div style="font-weight:600; font-size:13px;">Review BMS trending data for concurrent anomalies</div><div style="font-size:12px; color:var(--text-light);">Source: AI Model · Confidence: 86%</div></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h3 class="section-title" data-i18n="details.faultRules">Fault Rule Evaluation Results</h3>
-                    <div class="fault-grid">
-                        <div class="fault-card active">
-                            <div class="fault-card-header"><div><div class="fault-name">Overheating Detection</div><div class="fault-type">Temperature Fault</div></div><span class="fault-status fault">Fault Detected</span></div>
-                            <div class="fault-sensor">Sensor: SAT (Supply Air Temperature)</div>
-                            <div class="fault-value"><span class="fault-value-num">32.5</span><span class="fault-value-range">Threshold: 28.0 C</span></div>
-                        </div>
-                        <div class="fault-card resolved">
-                            <div class="fault-card-header"><div><div class="fault-name">Low Supply Air Temp</div><div class="fault-type">Temperature Fault</div></div><span class="fault-status no-fault">No Fault</span></div>
-                            <div class="fault-sensor">Sensor: SAT (Supply Air Temperature)</div>
-                            <div class="fault-value"><span class="fault-value-num">24.5</span><span class="fault-value-range">Threshold: 18.0 C</span></div>
-                        </div>
-                        <div class="fault-card resolved">
-                            <div class="fault-card-header"><div><div class="fault-name">High CO2 Level</div><div class="fault-type">Air Quality Fault</div></div><span class="fault-status no-fault">No Fault</span></div>
-                            <div class="fault-sensor">Sensor: CO2 (Carbon Dioxide)</div>
-                            <div class="fault-value"><span class="fault-value-num">412</span><span class="fault-value-range">Threshold: 1000 ppm</span></div>
-                        </div>
-                    </div>
-
-                    <!-- #42: Rule-Based Fault Analysis with Time Bars -->
-                    <div class="card" style="margin-top: 24px;">
-                        <div class="card-header"><h3 class="card-title" data-i18n="details.ruleAnalysis">Rule-Based Fault Analysis</h3></div>
-                        <div class="card-body" style="padding:0;">
-                            <table class="data-table data-table-compact" style="table-layout:fixed; width:100%;">
-                                <thead>
-                                    <tr>
-                                        <th style="width:4%;">#</th><th style="width:11%;">Rule Name</th><th style="width:16%;">Time Bar (24h)</th>
-                                        <th style="width:6%;">Freq</th><th style="width:7%;">Dur.</th><th style="width:8%;">Cat.</th><th style="width:5%;">Type</th><th style="width:10%;">Expr.</th><th style="width:33%;">Recommendation</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>R1</td><td>High Supply Air Temp</td>
-                                        <td><div class="rule-time-bar"><div class="time-bar-segment normal" style="width:25%;"></div><div class="time-bar-segment fault" style="width:15%;"></div><div class="time-bar-segment normal" style="width:35%;"></div><div class="time-bar-segment fault" style="width:10%;"></div><div class="time-bar-segment normal" style="width:15%;"></div></div><div class="time-bar-label"><span>00:00</span><span>24:00</span></div></td>
-                                        <td>3.2/day</td><td>6h 20m</td><td>maintenance</td><td>Rule</td><td>SAT > 28</td><td style="font-size:12px;color:var(--info);">Check cooling coil, verify CHW supply</td>
-                                    </tr>
-                                    <tr>
-                                        <td>R2</td><td>High CO2 Level</td>
-                                        <td><div class="rule-time-bar"><div class="time-bar-segment normal" style="width:60%;"></div><div class="time-bar-segment fault" style="width:8%;"></div><div class="time-bar-segment normal" style="width:32%;"></div></div><div class="time-bar-label"><span>00:00</span><span>24:00</span></div></td>
-                                        <td>0.8/day</td><td>1h 50m</td><td>operation</td><td>Rule</td><td>CO2 > 1000</td><td style="font-size:12px;color:var(--info);">Check outdoor air damper, verify CO2 sensor</td>
-                                    </tr>
-                                    <tr>
-                                        <td>R3</td><td>High Vibration</td>
-                                        <td><div class="rule-time-bar"><div class="time-bar-segment normal" style="width:80%;"></div><div class="time-bar-segment fault" style="width:5%;"></div><div class="time-bar-segment normal" style="width:15%;"></div></div><div class="time-bar-label"><span>00:00</span><span>24:00</span></div></td>
-                                        <td>0.3/day</td><td>40m</td><td>maintenance</td><td>Rule</td><td>VIB > 4.0</td><td style="font-size:12px;color:var(--info);">Inspect fan bearings, check belt tension</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Resolved Faults History (Req #4: Show resolved faults) -->
-                    <div class="card" style="margin-top: 24px;">
-                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 class="card-title">Resolved Faults</h3>
-                            <span style="font-size:11px; color:var(--text-muted); background:var(--success-bg); color:var(--success); padding:3px 10px; border-radius:12px; font-weight:600;">3 Resolved</span>
-                        </div>
-                        <div class="card-body" style="padding:0;">
-                            <table class="data-table data-table-compact" style="width:100%;">
-                                <thead>
-                                    <tr>
-                                        <th style="width:6%;">#</th><th style="width:18%;">Fault Name</th><th style="width:10%;">Category</th><th style="width:8%;">Detected</th><th style="width:8%;">Resolved</th><th style="width:8%;">Duration</th><th style="width:10%;">Root Cause</th><th style="width:14%;">Resolution</th><th style="width:18%;">Operator</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr style="opacity:0.75;">
-                                        <td>R1</td><td>High Vibration</td><td style="font-size:11px;"><span style="padding:2px 8px;border-radius:10px;background:var(--warning-bg);color:var(--warning);font-size:10px;">Mechanical</span></td>
-                                        <td style="font-size:11px;">Sep 10</td><td style="font-size:11px;">Sep 13</td><td style="font-size:11px;">3d 4h</td>
-                                        <td style="font-size:11px;">Fan bearing wear</td>
-                                        <td style="font-size:11px;">Bearing replaced, vibration restored to 1.2 mm/s</td>
-                                        <td style="font-size:11px;">Wong KF · 10:30</td>
-                                    </tr>
-                                    <tr style="opacity:0.75;">
-                                        <td>R2</td><td>Low Supply Air Temp</td><td style="font-size:11px;"><span style="padding:2px 8px;border-radius:10px;background:var(--info-bg);color:var(--info);font-size:10px;">Temperature</span></td>
-                                        <td style="font-size:11px;">Sep 8</td><td style="font-size:11px;">Sep 9</td><td style="font-size:11px;">18h 40m</td>
-                                        <td style="font-size:11px;">HVS valve stuck open</td>
-                                        <td style="font-size:11px;">Valve actuator recalibrated, position verified</td>
-                                        <td style="font-size:11px;">Chan TL · 14:15</td>
-                                    </tr>
-                                    <tr style="opacity:0.75;">
-                                        <td>R3</td><td>High CO2 Level</td><td style="font-size:11px;"><span style="padding:2px 8px;border-radius:10px;background:var(--purple-bg);color:var(--purple);font-size:10px;">Air Quality</span></td>
-                                        <td style="font-size:11px;">Sep 5</td><td style="font-size:11px;">Sep 5</td><td style="font-size:11px;">2h 10m</td>
-                                        <td style="font-size:11px;">OA damper stuck closed</td>
-                                        <td style="font-size:11px;">Damper actuator replaced, airflow restored to 1200 CFM</td>
-                                        <td style="font-size:11px;">Lee SW · 09:45</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Fault Lifecycle Timeline (Req #3: Unified detail view with recommendations) -->
-                    <div class="card" style="margin-top: 24px;">
-                        <div class="card-header"><h3 class="card-title">Fault Lifecycle</h3></div>
-                        <div class="card-body">
-                            <div style="display:flex; flex-direction:column; gap:0; position:relative; padding-left:24px;">
-                                <!-- Vertical line -->
-                                <div style="position:absolute; left:11px; top:8px; bottom:8px; width:2px; background:linear-gradient(to bottom, var(--danger), var(--warning), var(--success));"></div>
-                                <!-- Event 1: Detection -->
-                                <div style="position:relative; padding:10px 0 10px 16px;">
-                                    <div style="position:absolute; left:-18px; top:14px; width:14px; height:14px; border-radius:50%; background:var(--danger); border:2px solid var(--white); z-index:1;"></div>
-                                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Detection</div>
-                                    <div style="font-size:13px; font-weight:600; margin-top:2px;">Overheating Detected — SAT 32.5 C (Threshold: 28.0 C)</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">Sep 14, 2025 · 14:23 · Rule: FMC-AH-SAT-01 · Confidence: 94%</div>
-                                </div>
-                                <!-- Event 2: AI Prediction -->
-                                <div style="position:relative; padding:10px 0 10px 16px;">
-                                    <div style="position:absolute; left:-18px; top:14px; width:14px; height:14px; border-radius:50%; background:var(--warning); border:2px solid var(--white); z-index:1;"></div>
-                                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">AI Prediction</div>
-                                    <div style="font-size:13px; font-weight:600; margin-top:2px;">Cooling fault probability 92% — CNN-LSTM model predicts persistent overheating</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">Sep 14, 2025 · 14:25 · Model: Gen III CNN-LSTM · F1: 94.2%</div>
-                                </div>
-                                <!-- Event 3: Diagnosis -->
-                                <div style="position:relative; padding:10px 0 10px 16px;">
-                                    <div style="position:absolute; left:-18px; top:14px; width:14px; height:14px; border-radius:50%; background:var(--accent); border:2px solid var(--white); z-index:1;"></div>
-                                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Diagnosis</div>
-                                    <div style="font-size:13px; font-weight:600; margin-top:2px;">Root cause: Cooling coil fouling + CHW supply temp deviation</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">Correlated sensors: SAT ↑, CHWST ↑, CCV 100% · Rule + AI consensus</div>
-                                </div>
-                                <!-- Event 4: Action Taken -->
-                                <div style="position:relative; padding:10px 0 10px 16px;">
-                                    <div style="position:absolute; left:-18px; top:14px; width:14px; height:14px; border-radius:50%; background:var(--info); border:2px solid var(--white); z-index:1;"></div>
-                                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Action Required</div>
-                                    <div style="font-size:13px; font-weight:600; margin-top:2px;">Inspect cooling coil · Verify CHW supply temperature and flow rate</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">Assigned to: Maintenance Team B · Priority: Critical</div>
-                                </div>
-                                <!-- Event 5: Current Status -->
-                                <div style="position:relative; padding:10px 0 10px 16px;">
-                                    <div style="position:absolute; left:-18px; top:14px; width:14px; height:14px; border-radius:50%; background:var(--danger); border:2px solid var(--white); z-index:1; animation: pulse 2s infinite;"></div>
-                                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; font-weight:600;">Current Status</div>
-                                    <div style="font-size:13px; font-weight:600; margin-top:2px; color:var(--danger);">ACTIVE — Awaiting maintenance action</div>
-                                    <div style="font-size:11px; color:var(--text-muted);">Duration: 4h 20m · Last updated: Sep 14, 18:43</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Gen III AI Model Architecture -->
-                    <div class="card" style="margin-top: 24px;">
-                        <div class="card-header">
-                            <h3 class="card-title" data-i18n="details.aiArch">Gen III AI Model Architecture</h3>
-                            <span class="ai-badge">AI</span>
-                        </div>
-                        <div class="card-body">
-                            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px;">
-                                <div style="text-align: center;"><div style="width: 120px; height: 60px; background: var(--info-bg); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #1E40AF;">Input Layer 10 Features</div><div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Sensor Data</div></div>
-                                <div style="font-size: 24px; color: var(--text-muted);">></div>
-                                <div style="text-align: center;"><div style="width: 120px; height: 60px; background: linear-gradient(135deg, var(--purple-bg), var(--info-bg)); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #6D28D9;">CNN Layers Feature Extraction</div><div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">1D Conv</div></div>
-                                <div style="font-size: 24px; color: var(--text-muted);">></div>
-                                <div style="text-align: center;"><div style="width: 120px; height: 60px; background: linear-gradient(135deg, var(--purple-bg), var(--info-bg)); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #6D28D9;">LSTM Layers Temporal</div><div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Sequence</div></div>
-                                <div style="font-size: 24px; color: var(--text-muted);">></div>
-                                <div style="text-align: center;"><div style="width: 120px; height: 60px; background: var(--success-bg); border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: #166534;">Output Layer 7 Faults</div><div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">Classification</div></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Correlated Sensor Readings (Req #3: Unified detail with sensor data) -->
-                    <div class="card" style="margin-top: 24px;">
-                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 class="card-title">Correlated Sensors</h3>
-                            <span style="font-size:11px; color:var(--text-muted);">Real-time readings from related sensors</span>
-                        </div>
-                        <div class="card-body">
-                            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
-                                <!-- SAT -->
-                                <div style="padding:14px; background:var(--danger-bg); border-radius:var(--radius-sm); border-left:3px solid var(--danger);">
-                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                        <div>
-                                            <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px;">SAT</div>
-                                            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Supply Air Temp</div>
-                                        </div>
-                                        <span style="font-size:10px; padding:2px 8px; border-radius:10px; background:var(--danger); color:white; font-weight:600;">HIGH</span>
-                                    </div>
-                                    <div style="display:flex; align-items:baseline; gap:4px; margin-top:8px;">
-                                        <span style="font-size:22px; font-weight:700; color:var(--danger); line-height:1.0; letter-spacing:-0.5px;">32.5</span>
-                                        <span style="font-size:11px; font-weight:500; color:var(--text-muted); text-transform:uppercase;">°C</span>
-                                    </div>
-                                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Threshold: 28.0 °C · Δ +4.5 °C</div>
-                                </div>
-                                <!-- RAT -->
-                                <div style="padding:14px; background:var(--bg-secondary); border-radius:var(--radius-sm); border-left:3px solid var(--accent);">
-                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                        <div>
-                                            <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px;">RAT</div>
-                                            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Return Air Temp</div>
-                                        </div>
-                                        <span style="font-size:10px; padding:2px 8px; border-radius:10px; background:var(--border); color:var(--text-muted); font-weight:600;">NORMAL</span>
-                                    </div>
-                                    <div style="display:flex; align-items:baseline; gap:4px; margin-top:8px;">
-                                        <span style="font-size:22px; font-weight:700; color:var(--petrol); line-height:1.0; letter-spacing:-0.5px;">25.8</span>
-                                        <span style="font-size:11px; font-weight:500; color:var(--text-muted); text-transform:uppercase;">°C</span>
-                                    </div>
-                                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Range: 22-28 °C · Within normal</div>
-                                </div>
-                                <!-- CHWST -->
-                                <div style="padding:14px; background:var(--warning-bg); border-radius:var(--radius-sm); border-left:3px solid var(--warning);">
-                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                        <div>
-                                            <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px;">CHWST</div>
-                                            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">CHW Supply Temp</div>
-                                        </div>
-                                        <span style="font-size:10px; padding:2px 8px; border-radius:10px; background:var(--warning); color:white; font-weight:600;">WARN</span>
-                                    </div>
-                                    <div style="display:flex; align-items:baseline; gap:4px; margin-top:8px;">
-                                        <span style="font-size:22px; font-weight:700; color:var(--warning); line-height:1.0; letter-spacing:-0.5px;">9.8</span>
-                                        <span style="font-size:11px; font-weight:500; color:var(--text-muted); text-transform:uppercase;">°C</span>
-                                    </div>
-                                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Setpoint: 7.0 °C · Δ +2.8 °C</div>
-                                </div>
-                                <!-- CCV -->
-                                <div style="padding:14px; background:var(--danger-bg); border-radius:var(--radius-sm); border-left:3px solid var(--danger);">
-                                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-                                        <div>
-                                            <div style="font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px;">CCV</div>
-                                            <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">Chilled Valve Position</div>
-                                        </div>
-                                        <span style="font-size:10px; padding:2px 8px; border-radius:10px; background:var(--danger); color:white; font-weight:600;">100%</span>
-                                    </div>
-                                    <div style="display:flex; align-items:baseline; gap:4px; margin-top:8px;">
-                                        <span style="font-size:22px; font-weight:700; color:var(--danger); line-height:1.0; letter-spacing:-0.5px;">100</span>
-                                        <span style="font-size:11px; font-weight:500; color:var(--text-muted); text-transform:uppercase;">%</span>
-                                    </div>
-                                    <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Fully open · No cooling headroom</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Fault Frequency Analysis (Req #3: Comprehensive detail) -->
-                    <div class="card" style="margin-top: 24px;">
-                        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-                            <h3 class="card-title">Fault Frequency Analysis</h3>
-                            <div style="display:flex; gap:6px;">
-                                <button class="btn btn-sm btn-primary" onclick="this.classList.add('active')" style="font-size:11px;">7 Days</button>
-                                <button class="btn btn-sm btn-secondary" onclick="this.classList.add('active')" style="font-size:11px;">30 Days</button>
-                                <button class="btn btn-sm btn-secondary" onclick="this.classList.add('active')" style="font-size:11px;">90 Days</button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <!-- Frequency bar chart (CSS-only) -->
-                            <div style="display:flex; flex-direction:column; gap:12px;">
-                                <div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                        <span style="font-size:12px; font-weight:600;">Overheating (SAT)</span>
-                                        <span style="font-size:12px; font-weight:700; color:var(--danger);">22 events</span>
-                                    </div>
-                                    <div style="height:8px; background:var(--bg-secondary); border-radius:4px; overflow:hidden;">
-                                        <div style="width:88%; height:100%; background:linear-gradient(90deg, var(--danger), var(--warning)); border-radius:4px;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                        <span style="font-size:12px; font-weight:600;">High Vibration</span>
-                                        <span style="font-size:12px; font-weight:700; color:var(--warning);">8 events</span>
-                                    </div>
-                                    <div style="height:8px; background:var(--bg-secondary); border-radius:4px; overflow:hidden;">
-                                        <div style="width:32%; height:100%; background:var(--warning); border-radius:4px;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                        <span style="font-size:12px; font-weight:600;">Low Supply Air Temp</span>
-                                        <span style="font-size:12px; font-weight:700; color:var(--info);">5 events</span>
-                                    </div>
-                                    <div style="height:8px; background:var(--bg-secondary); border-radius:4px; overflow:hidden;">
-                                        <div style="width:20%; height:100%; background:var(--info); border-radius:4px;"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                                        <span style="font-size:12px; font-weight:600;">High CO2 Level</span>
-                                        <span style="font-size:12px; font-weight:700; color:var(--purple);">3 events</span>
-                                    </div>
-                                    <div style="height:8px; background:var(--bg-secondary); border-radius:4px; overflow:hidden;">
-                                        <div style="width:12%; height:100%; background:var(--purple); border-radius:4px;"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div style="margin-top:12px; padding:8px 14px; background:var(--info-bg); border-radius:6px; font-size:11px; color:var(--info);">
-                                <strong>Trend:</strong> Overheating events increased 37% vs. previous 7-day period. Correlation with outdoor temperature rise (avg 33.2 °C).
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- ========== DEVICE MANAGEMENT PAGE (#5) ========== -->
+                
+<!-- ========== DEVICE MANAGEMENT PAGE (#5) ========== -->
                 <div id="page-devices" class="page-section">
                     <div class="breadcrumb"><a href="#" onclick="switchTab('overview')">Home</a> <span class="sep">&#8250;</span> Reports & Ops <span class="sep">&#8250;</span> Devices</div>
                     <div style="display:flex; justify-content:flex-end; margin-bottom:12px;"><button class="page-export-btn" onclick="alert('Export report (placeholder)')">Export Report</button></div>
@@ -6846,7 +6019,7 @@
             'nav.reportsPage': 'Reports', 'nav.operatorCenter': 'Operator Center',
             'nav.admin': 'Admin', 'nav.accounts': 'Accounts', 'nav.mapping': 'Mapping',
             'header.title': 'EMS Operations Center', 'header.online': 'DB Connected',
-            'tab.overview': 'Event List', 'tab.dashboard': 'Dashboard', 'tab.graph': 'Graph Review',
+            'tab.overview': 'Event List', 'tab.dashboard': 'Dashboard',
             'tab.health': 'Equipment Health', 'tab.rules': 'Rules', 'tab.aiPrediction': 'AI Predict',
             'tab.activities': 'Audit Trail', 'tab.details': 'Details', 'tab.devices': 'Devices',
             'tab.reports': 'Reports', 'tab.operatorCenter': 'Op Center', 'tab.accounts': 'Accounts',
@@ -6984,52 +6157,6 @@
     }
 
     // ── Tab Switching ──
-    // R18P6: Dynamically update Details page based on device ID
-    function updateDetailsPage(deviceId) {
-        var title = document.querySelector('#page-details .card-title');
-        if (title) {
-            var deviceMap = {
-                'AHU-703': 'Fault Detail — AHU-703 / SAT Deviation',
-                'AHU-707': 'Fault Detail — AHU-707 / Low Supply Air Temp',
-                'AHU-1301': 'Fault Detail — AHU-1301 / Damper Actuator Fault',
-                'AHU-1305': 'Fault Detail — AHU-1305 / Damper Actuator Fault',
-                'AHU-705': 'Fault Detail — AHU-705 / Vibration Alert',
-                'CH-CH-001': 'Fault Detail — CH-CH-001 / Chiller Efficiency Drop',
-                'CH-CH-002': 'Fault Detail — CH-CH-002 / Chiller Approach Temp'
-            };
-            title.textContent = deviceMap[deviceId] || ('Fault Detail — ' + deviceId);
-        }
-
-        // Update breadcrumb to show device name
-        var bc = document.querySelector('#page-details .breadcrumb');
-        if (bc) {
-            bc.innerHTML = '<a href="#" onclick="switchTab(\'overview\')">Event List</a> <span class="sep">&#8250;</span> <span style="color:var(--accent);">' + deviceId + '</span> <span class="sep">&#8250;</span> Fault Detail';
-        }
-
-        // Update Equipment KPI
-        var equipmentEl = document.querySelector('#page-details .card-body span[style*="font-size:18px"][style*="font-weight:700"]');
-        var allKpis = document.querySelectorAll('#page-details .card-body span');
-        allKpis.forEach(function(s) {
-            if (s.style.fontSize === '18px' && s.style.fontWeight === '700' && s.closest('.card-body') && s.closest('.card-body').querySelector('div > span[style*="12px"]')) {
-                // Find the Equipment label nearby
-            }
-        });
-        
-        // Update the Equipment field (second 18px bold span in the first card-body of page-details)
-        var detailCardBody = document.querySelector('#page-details .card-body');
-        if (detailCardBody && detailCardBody.querySelector('span[style*="18px"][style*="700"]')) {
-            var boldSpans = detailCardBody.querySelectorAll('span[style*="font-size:18px"][style*="font-weight:700"]');
-            if (boldSpans.length >= 2) {
-                boldSpans[1].textContent = deviceId;
-            }
-        }
-
-        // Update header title
-        var headerTitle = document.querySelector('.header-title');
-        if (headerTitle) {
-            headerTitle.textContent = 'Fault Detail — ' + deviceId;
-        }
-    }
 
     // R18P6: Sidebar-to-tab mapping (with details removed from sidebar)
 
@@ -7052,8 +6179,6 @@
         'ruleSetup': 'ruleSetup'
     };
 
-    // R18P6: Global variable for current detail device
-    var currentDetailDevice = 'AHU-703';
 
     function switchTab(tabKey, deviceId) {
         // Resolve sidebar key to actual page name
@@ -7103,19 +6228,13 @@
             });
         }
 
-        // R18P6: Handle deviceId for dynamic Details page
-        if (deviceId !== undefined && deviceId !== null && deviceId !== '') {
-            currentDetailDevice = deviceId;
-        }
-        if (pageName === 'details') {
-            updateDetailsPage(currentDetailDevice);
-        }
+
 
         // Update header title
         var titleMap = {
-            'overview': 'Event List', 'dashboard': 'Dashboard', 'graph': 'Graph Review',
+            'overview': 'Event List', 'dashboard': 'Dashboard',
             'health': 'Equipment Health', 'devices': 'Device Management', 'rules': 'Rules',
-            'aiPrediction': 'AI Prediction', 'activities': 'Audit Trail', 'details': 'Details',
+            'aiPrediction': 'AI Prediction', 'activities': 'Audit Trail',
             'reports': 'Reports', 'operatorCenter': 'Operator Center', 'accounts': 'Account Management',
             'mapping': 'Point Mapping', 'ruleSetup': 'Rule Setup', 'vibration': 'Vibration & Analysis'
         };
@@ -7254,26 +6373,17 @@
         var tbody = document.querySelector('#page-overview .event-list-scrollable tbody');
         if (!tbody) return;
         var rows = tbody.querySelectorAll('tr.event-row-clickable');
-        var detailRows = tbody.querySelectorAll('tr.event-detail-row');
         rows.forEach(function(row, idx) {
             var data = eventSourceData['all'][idx];
             if (!data) return;
             // Source filter
             var sourceMatch = (currentEventFilter === 'all' || data.src === currentEventFilter);
-            // Time filter: '24h' shows only 24h events; 'week' shows 24h+week; 'all' shows everything
+            // Time filter
             var timeMatch = false;
             if (currentTimeFilter === 'all') timeMatch = true;
             else if (currentTimeFilter === 'week') timeMatch = (data.timeRange === '24h' || data.timeRange === 'week');
             else if (currentTimeFilter === '24h') timeMatch = (data.timeRange === '24h');
-            if (sourceMatch && timeMatch) {
-                row.style.display = '';
-                if (detailRows[idx] && detailRows[idx].classList.contains('open')) {
-                    detailRows[idx].style.display = '';
-                }
-            } else {
-                row.style.display = 'none';
-                if (detailRows[idx]) detailRows[idx].style.display = 'none';
-            }
+            row.style.display = (sourceMatch && timeMatch) ? '' : 'none';
         });
     }
 
@@ -7366,6 +6476,17 @@
         'CH-002':   { health: 95, data: [7.2,7.1,7.0,6.9,7.0,7.1,7.2,7.3,7.2,7.1,7.0,6.9,7.0,7.1,7.2,7.1,7.0,6.9,7.0,7.1], conf: [0.96,0.97,0.96,0.95,0.96,0.97,0.96,0.95,0.96,0.97,0.96,0.95,0.96,0.97,0.96,0.97,0.96,0.95,0.96,0.97] }
     };
     var currentPredictionDevice = 'AHU-703';
+
+
+    function filterDeviceSidebar(query) {
+        var q = query.toLowerCase().trim();
+        document.querySelectorAll('.device-sidebar-item').forEach(function(item) {
+            var name = item.querySelector('.dsi-name');
+            if (!name) return;
+            var txt = name.textContent.toLowerCase();
+            item.style.display = (!q || txt.indexOf(q) >= 0) ? '' : 'none';
+        });
+    }
 
     function selectPredictionDevice(el, device) {
         currentPredictionDevice = device;
@@ -9737,9 +8858,9 @@ function switchBuilding(buildingCode) {
             'RF':  ['ALL','AHU-703','AHU-707','AHU-712'],
         };
         var ctxPageNames = {
-            'overview': 'Event List', 'dashboard': 'Dashboard', 'graph': 'Graph Review',
+            'overview': 'Event List', 'dashboard': 'Dashboard',
             'vibration': 'Vibration Analysis', 'health': 'Equipment Health', 'rules': 'Rules',
-            'aiPrediction': 'AI Prediction', 'activities': 'Audit Trail', 'details': 'Event Details',
+            'aiPrediction': 'AI Prediction', 'activities': 'Audit Trail',
             'devices': 'Devices', 'reports': 'Reports', 'operatorCenter': 'Operator Center',
             'accounts': 'Accounts', 'mapping': 'Mapping', 'ruleSetup': 'Rule Setup',
         };
