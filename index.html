@@ -2479,7 +2479,7 @@
                     <input type="checkbox" id="loginRemember" checked>
                     <label for="loginRemember" data-i18n="login.remember">Remember Me</label>
                 </div>
-                <button class="btn btn-primary login-btn" onclick="doLogin()" data-i18n="login.loginBtn">Login</button>
+                <button class="btn btn-primary login-btn" id="loginBtn" data-i18n="login.loginBtn">Login</button>
                 <div class="login-footer">
                     <span data-i18n="login.noAccount">Don't have an account?</span>
                     <a href="#" onclick="return false" data-i18n="login.register">Register</a>
@@ -8014,11 +8014,19 @@
         var user = document.getElementById('loginUser').value.trim();
         var pass = document.getElementById('loginPass').value.trim();
         if (!user || !pass) { alert('Please enter username and password.'); return; }
-        document.getElementById('loginOverlay').classList.add('hidden');
+        var overlay = document.getElementById('loginOverlay');
+        overlay.style.transition = 'opacity 0.3s';
+        overlay.style.opacity = '0';
+        setTimeout(function() {
+            overlay.style.display = 'none';
+            overlay.classList.add('hidden');
+            // Force redraw canvases after login
+            try { drawTrendChart(); drawAllSparklines(); drawGauges(); } catch(e) {}
+        }, 300);
     }
-    // Backup event binding for Cloudflare compatibility (inline onclick may be blocked by CSP/Rocket Loader)
+    // Login event binding
     var loginBtnEl = document.querySelector('.login-btn');
-    if (loginBtnEl) { loginBtnEl.addEventListener('click', function(e) { e.preventDefault(); doLogin(); }); }
+    if (loginBtnEl) { loginBtnEl.addEventListener('click', function(e) { e.preventDefault(); e.stopPropagation(); doLogin(); }); }
     // Allow Enter key on login
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter' && !document.getElementById('loginOverlay').classList.contains('hidden')) { doLogin(); }
