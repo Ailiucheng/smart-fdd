@@ -5744,7 +5744,7 @@
                     }
                     var selectedClass = (l2State.selectedEquip === eq.id) ? ' selected' : '';
 
-                    floorHtml += '<div class="tree-equip' + selectedClass + '" data-eq-id="' + eq.id + '" onclick="l2SelectEquip(\'' + eq.id + '\')">';
+                    floorHtml += '<div class="tree-equip' + selectedClass + '" data-eq-id="' + eq.id + '">';
                     floorHtml += '<span class="tree-health-dot" style="background:' + statusColor + '"></span>';
                     floorHtml += '<span class="tree-equip-name">' + eqName + '</span>';
                     floorHtml += '<span class="tree-equip-score" style="color:' + scoreColor + '">' + eq.score + '%</span>';
@@ -5755,7 +5755,7 @@
                         var vavId = 'vav-' + eq.id;
                         var vavList = (query && vavMatches.length > 0) ? vavMatches : eq.vavs;
                         var showVavs = !query || vavMatches.length > 0;
-                        floorHtml += '<div class="tree-vav-toggle" data-vav-toggle="' + vavId + '" onclick="l2ToggleVavList(\'' + vavId + '\')">';
+                        floorHtml += '<div class="tree-vav-toggle" data-vav-toggle="' + vavId + '">';
                         floorHtml += '<span class="tree-arrow">&#9654;</span>';
                         floorHtml += '<span>VAV Sub-equipment (' + vavList.length + ')</span>';
                         floorHtml += '</div>';
@@ -5766,7 +5766,7 @@
                                 var vre = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
                                 vName = v.replace(vre, '<mark>$1</mark>');
                             }
-                            floorHtml += '<div class="tree-vav-item" onclick="l2SelectEquip(\'' + eq.id + '\')">';
+                            floorHtml += '<div class="tree-vav-item" data-parent-equip="' + eq.id + '">';
                             floorHtml += '<span class="tree-vav-dot" style="background:var(--success)"></span>';
                             floorHtml += vName;
                             floorHtml += '</div>';
@@ -5781,7 +5781,7 @@
                         var fre = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
                         floorName = floor.name.replace(fre, '<mark>$1</mark>');
                     }
-                    bldgHtml += '<div class="tree-row" data-floor="' + floor.name + '" onclick="l2ToggleNode(this)">';
+                    bldgHtml += '<div class="tree-row" data-floor="' + floor.name + '">';
                     bldgHtml += '<span class="tree-arrow placeholder">&#9654;</span>';
                     bldgHtml += '<span class="tree-label secondary">' + floorName + '</span>';
                     bldgHtml += '<span class="tree-badge">' + (floorHtml.split('tree-equip').length - 1) + '</span>';
@@ -5793,7 +5793,7 @@
             if (bldgHasMatch && bldgHtml) {
                 var typeLabel = bldgEquipCount > 0 ? bldgEquipCount + ' equip' : '';
                 html += '<div class="tree-building">';
-                html += '<div class="tree-row expanded" data-building="' + bldg.building + '" onclick="l2ToggleNode(this)">';
+                html += '<div class="tree-row expanded" data-building="' + bldg.building + '">';
                 html += '<span class="tree-arrow open">&#9654;</span>';
                 html += '<span class="tree-dot" style="background:' + bldg.color + '"></span>';
                 html += '<span class="tree-label">' + bldg.building + '</span>';
@@ -5881,7 +5881,12 @@
         // Update selected visual
         document.querySelectorAll('.tree-equip.selected').forEach(function(el) { el.classList.remove('selected'); });
         var selected = document.querySelector('[data-eq-id="' + eqId + '"]');
-        if (selected) selected.classList.add('selected');
+        if (selected) {
+            selected.classList.add('selected');
+            // Brief highlight flash for visual feedback
+            selected.style.background = 'rgba(0,153,153,0.15)';
+            setTimeout(function() { selected.style.background = ''; }, 300);
+        }
         // Navigate to Rules page (0601 #19: no more details page)
         switchTab('rules', eqId);
         // Close panel on mobile or after selection
@@ -5912,6 +5917,38 @@
         if (chipEl) chipEl.classList.add('active');
         renderL2Tree();
     }
+
+    // R31: Event delegation for L2 tree clicks (replaces inline onclick for robustness)
+    document.addEventListener('click', function(e) {
+        // Equipment click → navigate to Rules page
+        var equipEl = e.target.closest('.tree-equip');
+        if (equipEl) {
+            e.preventDefault();
+            var eqId = equipEl.getAttribute('data-eq-id');
+            if (eqId) l2SelectEquip(eqId);
+            return;
+        }
+        // VAV sub-item click → navigate to Rules page with parent equipment
+        var vavEl = e.target.closest('.tree-vav-item');
+        if (vavEl) {
+            var parentEquip = vavEl.getAttribute('data-parent-equip');
+            if (parentEquip) l2SelectEquip(parentEquip);
+            return;
+        }
+        // Building/Floor row click → toggle expand/collapse
+        var treeNode = e.target.closest('.tree-row');
+        if (treeNode) {
+            l2ToggleNode(treeNode);
+            return;
+        }
+        // VAV toggle click
+        var vavToggle = e.target.closest('.tree-vav-toggle');
+        if (vavToggle) {
+            var vavListId = vavToggle.getAttribute('data-vav-toggle');
+            if (vavListId) l2ToggleVavList(vavListId);
+            return;
+        }
+    });
 
     // Initialize L2 tree on DOMContentLoaded
     document.addEventListener('DOMContentLoaded', function() {
