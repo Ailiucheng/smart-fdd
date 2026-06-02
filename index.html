@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: blob:; style-src 'unsafe-inline'; connect-src *;">
     <title>SMART FDD - AI Fault Detection & Diagnostics</title>
     <!-- Google Fonts removed for deployment compatibility (firewall/GFW) -->
@@ -2483,6 +2486,7 @@
                 <div class="login-footer">
                     <span data-i18n="login.noAccount">Don't have an account?</span>
                     <a href="#" onclick="return false" data-i18n="login.register">Register</a>
+                    <span style="margin-left:12px;font-size:10px;opacity:0.5;">v2.0-R26</span>
                 </div>
             </div>
         </div>
@@ -2692,19 +2696,19 @@
                     <!-- Step 1: Building Selection -->
                     <div id="l2Step1Content" class="l2-step-content">
                         <div class="l2-building-grid">
-                            <div class="l2-building-card" style="border-left-color:#009999;" onclick="l2SelectBuilding('Block G', this)" data-floors="3">
+                            <div class="l2-building-card" style="border-left-color:#009999;" data-building="Block G" data-floors="3">
                                 <div class="l2-building-name">Block G (Main)</div>
                                 <div class="l2-building-info">3 floors &middot; 5 AHUs &middot; 12 VAVs</div>
                             </div>
-                            <div class="l2-building-card" style="border-left-color:#F59E0B;" onclick="l2SelectBuilding('Block S', this)" data-floors="2">
+                            <div class="l2-building-card" style="border-left-color:#F59E0B;" data-building="Block S" data-floors="2">
                                 <div class="l2-building-name">Block S (South)</div>
                                 <div class="l2-building-info">2 floors &middot; 4 AHUs &middot; 8 VAVs</div>
                             </div>
-                            <div class="l2-building-card" style="border-left-color:#3B82F6;" onclick="l2SelectBuilding('Plant Room', this)" data-floors="1">
+                            <div class="l2-building-card" style="border-left-color:#3B82F6;" data-building="Plant Room" data-floors="1">
                                 <div class="l2-building-name">Plant Room</div>
                                 <div class="l2-building-info">1 floor &middot; 2 Chillers</div>
                             </div>
-                            <div class="l2-building-card" style="border-left-color:#8B5CF6;" onclick="l2SelectBuilding('Ambulatory', this)" data-floors="2">
+                            <div class="l2-building-card" style="border-left-color:#8B5CF6;" data-building="Ambulatory" data-floors="2">
                                 <div class="l2-building-name">Ambulatory Centre</div>
                                 <div class="l2-building-info">2 floors &middot; 3 AHUs &middot; 6 VAVs</div>
                             </div>
@@ -6396,6 +6400,49 @@
         }
     }
 
+    // ===== L2 EVENT DELEGATION (robust click handling) =====
+    document.addEventListener('click', function(e) {
+        var target = e.target;
+        // Building cards
+        var buildCard = target.closest('.l2-building-card');
+        if (buildCard) {
+            e.preventDefault();
+            l2SelectBuilding(buildCard.getAttribute('data-building'), buildCard);
+            return;
+        }
+        // Floor cards
+        var floorCard = target.closest('.l2-floor-card');
+        if (floorCard) {
+            e.preventDefault();
+            l2SelectFloor(floorCard.textContent, floorCard);
+            return;
+        }
+        // Equipment items
+        var equipItem = target.closest('.l2-equip-item');
+        if (equipItem) {
+            e.preventDefault();
+            var eqName = equipItem.getAttribute('data-eq-name');
+            if (eqName) { switchTab('details', eqName); if (document.getElementById('l2NavPanel')) { toggleL2Panel(); } }
+            return;
+        }
+        // Sub-equipment items
+        var subItem = target.closest('.l2-sub-equip-item');
+        if (subItem) {
+            e.preventDefault();
+            var subEqName = subItem.getAttribute('data-parent-eq');
+            if (subEqName) { switchTab('details', subEqName); }
+            return;
+        }
+        // VAV toggle headers
+        var vavHeader = target.closest('.l2-sub-equip-header');
+        if (vavHeader) {
+            e.preventDefault();
+            var vavEqName = vavHeader.getAttribute('data-eq-name');
+            if (vavEqName) { l2ToggleVavs(vavEqName); }
+            return;
+        }
+    });
+
     function l2GoStep(step) {
         l2State.step = step;
         document.querySelectorAll('.l2-step').forEach(function(s, i) {
@@ -6411,7 +6458,7 @@
     function l2SelectBuilding(name, el) {
         l2State.building = name;
         document.querySelectorAll('.l2-building-card').forEach(function(c) { c.classList.remove('selected'); });
-        el.classList.add('selected');
+        if (el) el.classList.add('selected');
         var floors = { 'Block G': ['Level 3', 'Level 7', 'Level 13'], 'Block S': ['Level 5', 'Level 9'], 'Plant Room': ['Ground Floor'], 'Ambulatory': ['Level 1', 'Level 2'] };
         var grid = document.getElementById('l2FloorGrid');
         grid.innerHTML = '';
@@ -6419,7 +6466,7 @@
             var div = document.createElement('div');
             div.className = 'l2-floor-card';
             div.textContent = f;
-            div.onclick = function() { l2SelectFloor(f, div); };
+            div.setAttribute('data-floor', f);
             grid.appendChild(div);
         });
         l2GoStep(2);
@@ -6428,7 +6475,7 @@
     function l2SelectFloor(name, el) {
         l2State.floor = name;
         document.querySelectorAll('.l2-floor-card').forEach(function(c) { c.classList.remove('selected'); });
-        el.classList.add('selected');
+        if (el) el.classList.add('selected');
         var equips = [
             { name: 'AHU-703', type: 'AHU', score: 62, status: 'danger', vavs: ['VAV-703-1', 'VAV-703-2', 'VAV-703-3', 'VAV-703-4'] },
             { name: 'AHU-707', type: 'AHU', score: 78, status: 'warning', vavs: ['VAV-707-1', 'VAV-707-2', 'VAV-707-3'] },
@@ -6441,15 +6488,15 @@
         equips.forEach(function(eq) {
             var div = document.createElement('div');
             div.className = 'l2-equip-item';
+            div.setAttribute('data-eq-name', eq.name);
             var color = eq.status === 'danger' ? 'var(--danger)' : eq.status === 'warning' ? 'var(--warning)' : 'var(--success)';
             div.innerHTML = '<span class="l2-equip-name">' + eq.name + '</span><span class="l2-equip-health"><span class="l2-equip-score" style="color:' + color + '">' + eq.score + '%</span><span class="health-dot ' + eq.status + '"></span></span>';
-            div.onclick = function() { switchTab('details', eq.name); if (document.getElementById('l2NavPanel')) { toggleL2Panel(); } };
             grid.appendChild(div);
             if (eq.vavs && eq.vavs.length > 0) {
                 var header = document.createElement('div');
                 header.className = 'l2-sub-equip-header';
+                header.setAttribute('data-eq-name', eq.name);
                 header.innerHTML = '<span>VAV Sub-equipment (' + eq.vavs.length + ')</span><span class="l2-sub-equip-arrow" id="l2VavArrow-' + eq.name + '">&#9654;</span>';
-                header.onclick = (function(eqName) { return function(e) { e.stopPropagation(); l2ToggleVavs(eqName); }; })(eq.name);
                 grid.appendChild(header);
                 var vavList = document.createElement('div');
                 vavList.className = 'l2-sub-equip-list';
@@ -6457,8 +6504,8 @@
                 eq.vavs.forEach(function(v) {
                     var vavDiv = document.createElement('div');
                     vavDiv.className = 'l2-sub-equip-item';
+                    vavDiv.setAttribute('data-parent-eq', eq.name);
                     vavDiv.innerHTML = '<span class="health-dot good"></span>' + v + ' <span class="l2-sub-equip-badge" style="background:var(--success-bg);color:var(--success);">Normal</span>';
-                    vavDiv.onclick = function(e) { e.stopPropagation(); switchTab('details', eq.name); };
                     vavList.appendChild(vavDiv);
                 });
                 grid.appendChild(vavList);
