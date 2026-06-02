@@ -1733,6 +1733,23 @@
         .device-sidebar-item .dsi-sub { font-size: 11px; color: var(--text-muted); }
 
         /* #9: Confidence filter */
+        .pred-device-dropdown-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px; cursor: pointer; font-size: 12px;
+            border-bottom: 1px solid var(--border-light); transition: background 0.15s;
+        }
+        .pred-device-dropdown-item:hover { background: rgba(0,153,153,0.05); }
+        .pred-device-dropdown-item.checked { background: rgba(0,153,153,0.08); }
+        .pred-device-dropdown-item input[type="checkbox"] { accent-color: var(--accent); }
+        .pred-device-dropdown-item .ddi-type {
+            font-size: 10px; padding: 1px 6px; border-radius: 4px;
+            background: var(--bg); color: var(--text-muted); font-weight: 600;
+        }
+        .pred-device-dropdown-item .ddi-building {
+            font-size: 10px; color: var(--text-muted); margin-left: auto;
+        }
+        .pred-device-dropdown-item.hidden { display: none; }
+
         .confidence-filter {
             display: flex;
             align-items: center;
@@ -3259,11 +3276,10 @@
                                 <thead>
                                     <tr>
                                         <th>Rule</th>
-                                        <th>Severity</th>
+                                        <th>Severity (1-5)</th>
                                         <th>Category</th>
-                                        <th>Intensity</th>
                                         <th>Activity</th>
-                                        <th>Duration</th>
+                                        <th>Duration (min)</th>
                                         <th>Costs</th>
                                         <th>Occurrences</th>
                                     </tr>
@@ -3481,25 +3497,15 @@
                                 <!-- Device Selector -->
                                 <div style="flex:1; min-width:240px;">
                                     <label style="display:block; font-size:11px; color:var(--text-muted); margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Equipment</label>
-                                    <div style="display:flex; gap:6px; flex-wrap:wrap;" id="predDevicePills">
-                                        <label class="pred-pill" style="display:flex;align-items:center;gap:4px;font-size:12px;background:var(--bg);padding:5px 12px;border-radius:20px;cursor:pointer;border:2px solid var(--accent);font-weight:600;transition:all 0.15s;">
-                                            <input type="checkbox" value="AHU-703" checked onchange="updatePredictionRuleCharts()" style="accent-color:var(--accent);"> AHU-703
-                                        </label>
-                                        <label class="pred-pill" style="display:flex;align-items:center;gap:4px;font-size:12px;background:var(--bg);padding:5px 12px;border-radius:20px;cursor:pointer;border:2px solid transparent;font-weight:500;transition:all 0.15s;">
-                                            <input type="checkbox" value="AHU-707" onchange="updatePredictionRuleCharts()" style="accent-color:var(--accent);"> AHU-707
-                                        </label>
-                                        <label class="pred-pill" style="display:flex;align-items:center;gap:4px;font-size:12px;background:var(--bg);padding:5px 12px;border-radius:20px;cursor:pointer;border:2px solid transparent;font-weight:500;transition:all 0.15s;">
-                                            <input type="checkbox" value="AHU-1301" onchange="updatePredictionRuleCharts()" style="accent-color:var(--accent);"> AHU-1301
-                                        </label>
-                                        <label class="pred-pill" style="display:flex;align-items:center;gap:4px;font-size:12px;background:var(--bg);padding:5px 12px;border-radius:20px;cursor:pointer;border:2px solid transparent;font-weight:500;transition:all 0.15s;">
-                                            <input type="checkbox" value="AHU-1305" onchange="updatePredictionRuleCharts()" style="accent-color:var(--accent);"> AHU-1305
-                                        </label>
-                                        <label class="pred-pill" style="display:flex;align-items:center;gap:4px;font-size:12px;background:var(--bg);padding:5px 12px;border-radius:20px;cursor:pointer;border:2px solid transparent;font-weight:500;transition:all 0.15s;">
-                                            <input type="checkbox" value="CH-001" onchange="updatePredictionRuleCharts()" style="accent-color:var(--accent);"> CH-001
-                                        </label>
-                                        <label class="pred-pill" style="display:flex;align-items:center;gap:4px;font-size:12px;background:var(--bg);padding:5px 12px;border-radius:20px;cursor:pointer;border:2px solid transparent;font-weight:500;transition:all 0.15s;">
-                                            <input type="checkbox" value="CH-002" onchange="updatePredictionRuleCharts()" style="accent-color:var(--accent);"> CH-002
-                                        </label>
+                                    <div id="predDeviceSelector" style="position:relative;">
+                                        <div id="predDeviceSelectorBox" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:6px 10px; border:1px solid var(--border); border-radius:8px; min-height:36px; cursor:pointer; background:var(--white);" onclick="togglePredDeviceDropdown()">
+                                            <span id="predDeviceSelectedCount" style="font-size:12px; color:var(--text-muted);">1 selected</span>
+                                            <span style="margin-left:auto; font-size:10px; color:var(--text-muted);">Search...</span>
+                                        </div>
+                                        <input type="text" id="predDeviceSearchInput" placeholder="Search equipment..." style="display:none; width:100%; margin-bottom:6px; padding:6px 10px; border:1px solid var(--accent); border-radius:6px; font-size:12px; outline:none;" oninput="filterPredDeviceDropdown(this.value)" onkeydown="handlePredDeviceKeydown(event)">
+                                        <div id="predDeviceDropdown" style="display:none; position:absolute; left:0; right:0; top:42px; max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:8px; background:var(--white); box-shadow:var(--shadow-lg); z-index:100;">
+                                            <!-- Populated by JS -->
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- Rule Selector -->
@@ -3565,10 +3571,7 @@
                                     <span style="font-size:18px; font-weight:700; color:var(--success);">94.2%</span>
                                 </div>
                                 <div style="width:1px; height:20px; background:var(--border);"></div>
-                                <div style="display:flex; align-items:center; gap:6px;">
-                                    <span style="font-size:12px; color:var(--text-muted);">Predictions (24h)</span>
-                                    <span style="font-size:18px; font-weight:700; ">23</span>
-                                </div>
+                                
                                 <div style="width:1px; height:20px; background:var(--border);"></div>
                                 <div style="display:flex; align-items:center; gap:6px;">
                                     <span style="font-size:12px; color:var(--text-muted);">Confidence</span>
@@ -3593,30 +3596,7 @@
                                 <input type="text" class="device-search-input" placeholder="Search equipment..." style="width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:6px; font-size:12px; outline:none;" oninput="filterDeviceSidebar(this.value)">
                             </div>
                             <div class="device-sidebar-header">Equipment</div>
-                            <div class="device-sidebar-item active" onclick="selectPredictionDevice(this, 'AHU-703')">
-                                <span class="dsi-dot" style="background:var(--success)"></span>
-                                <div><div class="dsi-name">AHU-703</div><div class="dsi-sub">Level 7 - 92% Health</div></div>
-                            </div>
-                            <div class="device-sidebar-item" onclick="selectPredictionDevice(this, 'AHU-707')">
-                                <span class="dsi-dot" style="background:var(--warning)"></span>
-                                <div><div class="dsi-name">AHU-707</div><div class="dsi-sub">Level 7 - 76% Health</div></div>
-                            </div>
-                            <div class="device-sidebar-item" onclick="selectPredictionDevice(this, 'AHU-1301')">
-                                <span class="dsi-dot" style="background:var(--success)"></span>
-                                <div><div class="dsi-name">AHU-1301</div><div class="dsi-sub">Level 13 - 94% Health</div></div>
-                            </div>
-                            <div class="device-sidebar-item" onclick="selectPredictionDevice(this, 'AHU-1305')">
-                                <span class="dsi-dot" style="background:var(--success)"></span>
-                                <div><div class="dsi-name">AHU-1305</div><div class="dsi-sub">Level 13 - 91% Health</div></div>
-                            </div>
-                            <div class="device-sidebar-item" onclick="selectPredictionDevice(this, 'CH-001')">
-                                <span class="dsi-dot" style="background:var(--success)"></span>
-                                <div><div class="dsi-name">CH-CH-001</div><div class="dsi-sub">Plant Room - 96% Health</div></div>
-                            </div>
-                            <div class="device-sidebar-item" onclick="selectPredictionDevice(this, 'CH-002')">
-                                <span class="dsi-dot" style="background:var(--success)"></span>
-                                <div><div class="dsi-name">CH-CH-002</div><div class="dsi-sub">Plant Room - 95% Health</div></div>
-                            </div>
+                            <div class="device-sidebar-items-container"></div>
                         </div>
 
                         <!-- Main Content -->
@@ -5953,6 +5933,7 @@
     // Initialize L2 tree on DOMContentLoaded
     document.addEventListener('DOMContentLoaded', function() {
         renderL2Tree();
+        buildDeviceSidebar();
     });
 
     // ===== RULES SUB-TAB SYSTEM (R28: proper page switching) =====
@@ -6479,19 +6460,224 @@
 
     // ── Prediction Device Selection ──
     var predictionData = {
-        'AHU-703':  { health: 92, data: [24.1,24.3,24.5,24.8,25.0,24.9,24.7,24.5,24.3,24.6,24.8,25.1,25.0,24.8,24.5,24.3,24.1,24.4,24.6,24.9], conf: [0.92,0.94,0.91,0.95,0.88,0.93,0.96,0.94,0.91,0.89,0.93,0.97,0.82,0.94,0.95,0.93,0.91,0.94,0.92,0.90] },
-        'AHU-707':  { health: 76, data: [25.2,25.5,25.8,26.1,26.5,27.0,27.4,27.8,28.2,27.9,27.5,27.2,26.8,26.5,26.2,25.9,25.6,25.3,25.5,25.8], conf: [0.88,0.90,0.87,0.85,0.78,0.72,0.68,0.65,0.60,0.63,0.67,0.70,0.75,0.78,0.82,0.85,0.88,0.90,0.87,0.84] },
-        'AHU-1301': { health: 94, data: [23.5,23.6,23.8,23.7,23.9,24.0,24.1,24.0,23.8,23.9,24.1,24.2,24.3,24.2,24.0,23.9,23.8,23.9,24.0,24.1], conf: [0.95,0.96,0.97,0.95,0.96,0.97,0.98,0.96,0.95,0.96,0.97,0.98,0.97,0.96,0.95,0.96,0.97,0.96,0.95,0.96] },
-        'AHU-1305': { health: 91, data: [23.8,23.9,24.0,24.2,24.3,24.1,24.0,24.2,24.4,24.5,24.3,24.1,23.9,24.0,24.2,24.3,24.5,24.4,24.2,24.0], conf: [0.94,0.93,0.95,0.92,0.91,0.93,0.94,0.92,0.90,0.89,0.91,0.93,0.94,0.92,0.90,0.89,0.87,0.89,0.91,0.93] },
-        'CH-001':   { health: 96, data: [7.0,7.1,7.2,7.1,7.0,6.9,7.0,7.1,7.2,7.3,7.2,7.1,7.0,6.9,7.0,7.1,7.2,7.1,7.0,7.0], conf: [0.97,0.98,0.97,0.98,0.97,0.96,0.97,0.98,0.97,0.96,0.97,0.98,0.97,0.96,0.97,0.98,0.97,0.98,0.97,0.97] },
-        'CH-002':   { health: 95, data: [7.2,7.1,7.0,6.9,7.0,7.1,7.2,7.3,7.2,7.1,7.0,6.9,7.0,7.1,7.2,7.1,7.0,6.9,7.0,7.1], conf: [0.96,0.97,0.96,0.95,0.96,0.97,0.96,0.95,0.96,0.97,0.96,0.95,0.96,0.97,0.96,0.97,0.96,0.95,0.96,0.97] }
+        'AHU-1101':  { health: 92, data: [25.3,23.4,24.8,24.8,25.2,23.5,26.0,24.7,26.0,24.3,24.8,26.5,26.1,25.2,25.1,24.3,22.6,23.2,22.6,23.2], conf: [0.81,0.78,0.71,0.77,0.83,0.97,0.7,0.86,0.92,0.73,0.76,0.93,0.96,0.9,0.71,0.86,0.95,0.95,0.77,0.76] },
+        'AHU-1301':  { health: 94, data: [23.9,26.2,23.9,23.2,24.1,23.5,26.4,24.9,22.9,26.3,26.4,22.6,26.2,25.6,25.5,23.5,23.4,24.9,26.2,25.9], conf: [0.84,0.88,0.78,0.91,0.88,0.81,0.78,0.97,0.77,0.78,0.77,0.77,0.81,0.95,0.75,0.86,0.96,0.76,0.96,0.72] },
+        'AHU-1305':  { health: 89, data: [23.1,24.5,24.0,24.0,23.3,24.6,25.7,22.5,25.2,25.6,24.4,22.5,26.4,24.4,24.3,24.5,23.0,24.9,26.0,25.5], conf: [0.89,0.74,0.92,0.86,0.94,0.75,0.94,0.77,0.86,0.86,0.7,0.96,0.83,0.87,0.93,0.89,0.71,0.98,0.96,0.72] },
+        'AHU-1501':  { health: 81, data: [25.2,26.3,24.2,24.5,23.7,26.0,25.5,23.2,24.0,24.6,23.1,23.1,24.2,23.8,23.2,23.1,23.4,22.5,25.1,26.3], conf: [0.96,0.73,0.94,0.95,0.73,0.89,0.85,0.85,0.84,0.76,0.93,0.86,0.96,0.91,0.78,0.79,0.91,0.93,0.89,0.9] },
+        'AHU-303':  { health: 88, data: [25.7,25.1,23.1,24.0,26.2,24.1,24.1,25.9,25.0,22.9,23.9,24.8,25.8,26.0,24.7,26.0,25.1,23.8,24.3,24.1], conf: [0.78,0.8,0.84,0.85,0.73,0.93,0.89,0.81,0.92,0.73,0.98,0.77,0.92,0.72,0.85,0.83,0.7,0.75,0.84,0.87] },
+        'AHU-501':  { health: 90, data: [25.0,26.4,24.9,24.9,24.5,24.6,26.5,24.9,23.8,24.9,23.0,22.7,24.9,25.1,22.5,24.7,24.0,26.3,23.8,23.6], conf: [0.96,0.72,0.97,0.86,0.73,0.89,0.94,0.96,0.8,0.83,0.97,0.86,0.86,0.97,0.83,0.96,0.86,0.9,0.97,0.81] },
+        'AHU-503':  { health: 88, data: [24.9,22.7,25.2,25.9,25.7,25.8,24.1,25.4,23.8,25.2,26.1,23.4,25.1,22.5,23.9,26.3,23.7,23.5,25.1,25.5], conf: [0.89,0.81,0.97,0.86,0.75,0.77,0.73,0.82,0.87,0.96,0.97,0.89,0.97,0.91,0.94,0.85,0.73,0.74,0.87,0.83] },
+        'AHU-703':  { health: 96, data: [25.9,23.7,23.7,26.4,22.8,25.3,23.0,24.4,26.1,25.7,23.8,25.9,23.4,26.3,25.5,23.6,22.8,22.8,24.6,26.5], conf: [0.91,0.74,0.86,0.73,0.96,0.76,0.83,0.77,0.98,0.8,0.71,0.87,0.82,0.9,0.81,0.85,0.75,0.83,0.93,0.89] },
+        'AHU-707':  { health: 84, data: [24.1,22.8,26.4,24.2,26.5,26.4,23.2,22.7,23.9,23.2,25.9,24.1,25.2,23.3,26.1,24.8,23.3,22.9,24.3,23.1], conf: [0.85,0.86,0.92,0.74,0.96,0.77,0.98,0.74,0.73,0.83,0.84,0.83,0.71,0.7,0.96,0.91,0.75,0.9,0.79,0.76] },
+        'AHU-712':  { health: 82, data: [22.9,24.1,23.6,26.1,25.5,24.6,23.4,22.9,24.2,22.7,26.4,25.4,26.0,23.2,26.1,25.7,25.3,22.5,24.5,23.1], conf: [0.88,0.78,0.71,0.95,0.75,0.74,0.82,0.91,0.81,0.79,0.81,0.71,0.97,0.74,0.89,0.74,0.88,0.77,0.97,0.79] },
+        'AHU-901':  { health: 87, data: [26.2,22.8,22.7,24.0,24.3,24.2,24.5,25.8,26.2,24.2,24.7,24.3,25.3,24.0,24.6,23.2,23.4,24.2,23.1,24.1], conf: [0.72,0.82,0.78,0.71,0.79,0.88,0.84,0.89,0.91,0.79,0.97,0.85,0.95,0.78,0.85,0.74,0.8,0.81,0.86,0.85] },
+        'AHU-A01':  { health: 81, data: [25.1,24.8,23.1,25.1,24.7,23.4,25.7,26.5,26.2,23.4,23.3,23.4,24.3,26.4,25.3,23.0,25.3,24.9,22.6,23.1], conf: [0.94,0.77,0.85,0.73,0.75,0.84,0.88,0.85,0.95,0.82,0.83,0.94,0.75,0.86,0.92,0.76,0.96,0.74,0.84,0.77] },
+        'AHU-A02':  { health: 71, data: [24.8,22.6,25.8,22.6,23.6,23.9,24.0,24.6,25.2,25.6,23.8,23.6,24.6,25.8,23.2,22.9,26.1,26.0,26.4,22.6], conf: [0.85,0.74,0.77,0.93,0.95,0.75,0.73,0.91,0.71,0.82,0.85,0.81,0.81,0.74,0.81,0.81,0.94,0.82,0.84,0.78] },
+        'CH-CH-001':  { health: 72, data: [7.7,8.0,5.5,8.3,5.9,8.6,7.8,5.3,5.3,8.4,8.3,7.5,6.1,7.8,7.8,6.4,7.4,8.3,8.1,5.4], conf: [0.95,0.86,0.84,0.77,0.71,0.9,0.88,0.84,0.81,0.84,0.84,0.9,0.88,0.8,0.87,0.86,0.86,0.82,0.82,0.89] },
+        'CH-CH-002':  { health: 72, data: [7.8,8.6,6.2,8.0,6.1,8.7,7.5,5.1,7.1,6.7,8.6,7.0,8.5,6.1,6.7,6.2,5.5,8.3,7.1,5.2], conf: [0.79,0.95,0.8,0.92,0.78,0.98,0.77,0.96,0.87,0.74,0.81,0.85,0.75,0.87,0.92,0.85,0.9,0.72,0.94,0.73] },
+        'CT-001':  { health: 75, data: [6.4,6.8,8.3,8.3,6.8,6.2,6.2,6.0,5.8,8.7,7.0,6.3,7.5,6.3,8.2,8.8,5.8,8.8,5.4,5.6], conf: [0.77,0.97,0.91,0.92,0.7,0.73,0.86,0.8,0.7,0.87,0.88,0.92,0.82,0.72,0.84,0.94,0.78,0.94,0.93,0.81] },
+        'CWP-001':  { health: 89, data: [7.8,5.3,8.5,5.4,7.5,6.6,7.7,5.1,8.3,7.7,8.3,6.0,8.8,7.9,5.7,5.4,7.7,7.6,6.3,8.5], conf: [0.72,0.87,0.94,0.74,0.85,0.84,0.95,0.81,0.76,0.87,0.76,0.91,0.89,0.87,0.85,0.8,0.93,0.83,0.97,0.91] },
+        'CWP-002':  { health: 88, data: [6.8,7.3,5.8,8.4,7.5,6.4,6.8,5.1,8.9,5.0,5.7,7.1,7.9,6.7,5.7,6.7,5.8,7.6,6.8,7.4], conf: [0.78,0.94,0.74,0.96,0.77,0.83,0.7,0.97,0.83,0.8,0.97,0.74,0.76,0.96,0.98,0.76,0.78,0.9,0.77,0.98] },
+        'FCU-A101':  { health: 86, data: [21.7,20.9,21.4,21.5,23.1,23.0,21.9,21.2,22.3,23.0,23.9,21.6,22.2,21.2,21.8,22.3,20.8,22.4,23.5,23.1], conf: [0.82,0.98,0.79,0.76,0.7,0.8,0.94,0.83,0.87,0.94,0.86,0.97,0.8,0.71,0.77,0.98,0.79,0.72,0.7,0.83] },
+        'FCU-A102':  { health: 96, data: [23.2,23.0,21.3,21.0,21.1,20.4,23.7,21.4,21.1,20.6,23.9,21.8,23.5,22.9,23.8,22.8,22.7,22.7,21.2,21.6], conf: [0.75,0.88,0.97,0.92,0.97,0.9,0.82,0.91,0.82,0.92,0.7,0.75,0.75,0.71,0.75,0.86,0.9,0.94,0.89,0.83] },
+        'FCU-A103':  { health: 71, data: [22.9,23.2,22.1,22.8,21.1,23.4,20.6,20.9,23.5,20.4,23.4,23.6,22.8,20.2,22.4,21.6,21.2,21.2,21.2,23.2], conf: [0.93,0.94,0.78,0.84,0.9,0.74,0.82,0.81,0.77,0.78,0.86,0.71,0.81,0.72,0.79,0.92,0.97,0.82,0.74,0.91] },
+        'FCU-A104':  { health: 91, data: [23.1,20.2,20.5,21.4,23.8,23.7,20.3,20.7,23.0,21.1,23.8,21.7,22.8,20.7,23.9,22.2,21.5,23.1,21.5,23.2], conf: [0.84,0.71,0.81,0.78,0.9,0.91,0.89,0.9,0.76,0.9,0.84,0.87,0.72,0.81,0.86,0.94,0.8,0.76,0.96,0.95] },
+        'FCU-A201':  { health: 72, data: [20.1,21.7,21.3,21.9,20.9,21.0,21.8,22.8,21.6,22.9,21.5,23.0,22.9,21.1,22.5,21.8,20.3,22.8,22.0,20.3], conf: [0.84,0.7,0.76,0.93,0.85,0.74,0.86,0.75,0.73,0.97,0.78,0.74,0.86,0.9,0.95,0.81,0.82,0.92,0.91,0.9] },
+        'FCU-A202':  { health: 90, data: [21.6,23.1,20.6,20.3,21.3,21.3,23.6,23.8,22.4,22.9,20.7,22.7,20.4,23.3,22.1,20.9,20.8,21.5,23.9,20.3], conf: [0.88,0.96,0.91,0.75,0.78,0.71,0.85,0.93,0.81,0.93,0.95,0.95,0.88,0.83,0.75,0.87,0.97,0.89,0.87,0.77] },
+        'FCU-A203':  { health: 93, data: [23.9,23.2,22.9,23.8,22.0,23.6,22.7,21.5,22.7,20.5,21.4,23.3,23.3,20.2,22.7,20.1,21.2,20.0,22.4,20.5], conf: [0.71,0.75,0.95,0.8,0.98,0.8,0.93,0.71,0.87,0.87,0.97,0.76,0.71,0.71,0.79,0.87,0.77,0.84,0.75,0.75] },
+        'FCU-A204':  { health: 80, data: [20.5,22.4,23.7,22.8,20.5,21.7,21.2,21.5,21.6,21.5,22.8,24.0,23.8,22.1,20.1,22.1,22.4,23.8,20.6,20.4], conf: [0.92,0.86,0.83,0.75,0.72,0.78,0.77,0.87,0.77,0.87,0.95,0.81,0.79,0.77,0.94,0.93,0.88,0.79,0.95,0.94] },
+        'FCU-B301':  { health: 92, data: [22.2,21.2,21.9,20.8,21.8,22.3,22.2,22.6,22.5,22.1,23.4,23.3,21.2,21.8,20.1,21.5,20.5,23.2,22.6,23.6], conf: [0.82,0.81,0.7,0.91,0.82,0.94,0.82,0.72,0.72,0.88,0.74,0.75,0.75,0.74,0.95,0.85,0.75,0.93,0.86,0.96] },
+        'FCU-B302':  { health: 84, data: [20.7,20.5,21.9,20.9,20.1,23.8,20.3,22.9,23.0,20.8,23.7,20.7,22.4,23.5,20.6,23.0,21.8,21.3,21.3,23.9], conf: [0.96,0.73,0.77,0.95,0.75,0.83,0.93,0.96,0.78,0.71,0.73,0.86,0.85,0.92,0.84,0.98,0.88,0.81,0.9,0.92] },
+        'FCU-B303':  { health: 83, data: [21.5,20.0,20.1,22.2,23.1,22.5,23.4,22.9,23.8,20.4,22.7,20.2,21.7,20.7,21.7,20.5,21.6,20.2,22.7,20.8], conf: [0.84,0.82,0.71,0.95,0.85,0.7,0.95,0.76,0.91,0.95,0.7,0.81,0.94,0.88,0.86,0.85,0.74,0.8,0.76,0.89] },
+        'FCU-B304':  { health: 88, data: [21.3,20.8,22.0,22.1,23.5,21.9,21.7,20.2,20.6,20.3,22.4,21.0,20.2,20.1,22.6,21.2,22.4,22.2,20.9,20.7], conf: [0.84,0.85,0.8,0.8,0.77,0.83,0.83,0.88,0.81,0.88,0.72,0.92,0.76,0.96,0.94,0.73,0.92,0.83,0.91,0.97] },
+        'FCU-B305':  { health: 90, data: [21.4,20.8,23.2,22.9,20.8,23.7,21.9,21.3,22.0,20.3,23.2,23.9,22.4,21.6,23.7,23.2,22.0,23.2,23.9,20.2], conf: [0.73,0.97,0.89,0.85,0.75,0.89,0.94,0.8,0.98,0.75,0.94,0.78,0.95,0.75,0.96,0.9,0.78,0.94,0.95,0.8] },
+        'FCU-G1301':  { health: 91, data: [20.3,20.7,22.0,23.0,22.2,23.8,23.6,21.6,21.1,20.2,20.1,20.1,21.5,20.4,20.1,23.1,22.8,21.7,23.2,21.3], conf: [0.85,0.88,0.71,0.92,0.76,0.8,0.76,0.7,0.83,0.97,0.73,0.72,0.96,0.75,0.85,0.89,0.81,0.97,0.97,0.82] },
+        'FCU-G1302':  { health: 85, data: [23.1,22.6,20.1,21.5,22.0,23.7,22.0,20.1,20.9,23.2,21.5,21.7,21.9,20.3,22.5,21.8,23.5,21.5,21.1,22.8], conf: [0.89,0.76,0.9,0.96,0.75,0.84,0.95,0.92,0.97,0.86,0.8,0.82,0.76,0.95,0.91,0.77,0.97,0.77,0.93,0.96] },
+        'FCU-G1501':  { health: 84, data: [23.6,22.4,21.1,20.6,21.5,22.1,21.4,21.2,21.5,22.9,22.5,22.8,20.2,23.0,23.9,22.0,23.4,21.4,23.7,22.4], conf: [0.86,0.89,0.97,0.96,0.92,0.82,0.81,0.94,0.89,0.77,0.77,0.85,0.82,0.97,0.72,0.74,0.87,0.9,0.7,0.88] },
+        'FCU-G1502':  { health: 85, data: [20.9,22.5,22.3,23.0,22.9,20.2,22.4,20.3,20.4,22.3,21.7,22.6,22.8,23.7,20.6,21.3,20.5,23.5,20.6,23.7], conf: [0.9,0.76,0.81,0.77,0.74,0.96,0.91,0.95,0.96,0.73,0.72,0.71,0.94,0.95,0.8,0.73,0.72,0.87,0.85,0.71] },
+        'FCU-G1503':  { health: 93, data: [23.4,21.2,20.4,21.6,21.5,21.1,23.3,22.4,23.1,21.4,21.6,22.6,22.2,23.2,22.2,20.9,21.2,23.0,23.8,20.2], conf: [0.74,0.83,0.86,0.8,0.89,0.97,0.88,0.93,0.86,0.98,0.82,0.75,0.71,0.83,0.94,0.73,0.77,0.92,0.76,0.9] },
+        'FCU-G701':  { health: 73, data: [23.1,22.4,20.4,23.1,23.0,21.6,22.3,23.5,22.2,23.7,22.1,21.5,23.1,23.5,20.6,21.3,23.0,22.5,24.0,22.9], conf: [0.72,0.91,0.97,0.78,0.78,0.75,0.9,0.73,0.92,0.8,0.9,0.9,0.95,0.91,0.78,0.89,0.73,0.81,0.91,0.95] },
+        'FCU-G702':  { health: 77, data: [23.1,22.2,20.7,22.9,21.3,22.0,20.2,23.6,20.9,22.3,23.4,23.8,22.2,21.3,22.0,23.2,20.9,23.7,22.0,20.4], conf: [0.85,0.75,0.76,0.72,0.91,0.84,0.88,0.8,0.86,0.92,0.78,0.9,0.87,0.71,0.94,0.88,0.93,0.86,0.75,0.91] },
+        'FCU-G703':  { health: 74, data: [21.8,23.8,23.3,20.8,23.3,23.9,21.5,21.6,23.4,20.2,22.5,23.8,20.1,20.1,20.8,23.0,22.6,20.1,21.0,20.7], conf: [0.71,0.72,0.94,0.91,0.8,0.89,0.97,0.9,0.78,0.86,0.75,0.96,0.92,0.74,0.89,0.77,0.82,0.73,0.93,0.72] },
+        'FCU-G704':  { health: 89, data: [22.3,21.8,20.5,23.8,23.8,21.4,21.2,21.4,21.5,23.2,23.3,22.0,21.3,23.4,21.8,21.6,21.2,20.8,20.8,21.9], conf: [0.98,0.89,0.73,0.76,0.8,0.84,0.87,0.82,0.85,0.96,0.89,0.87,0.76,0.85,0.92,0.96,0.95,0.92,0.92,0.75] },
+        'FCU-S1101':  { health: 80, data: [22.3,22.1,21.3,23.2,21.5,23.7,21.9,23.6,23.4,23.8,23.0,21.5,20.3,22.7,21.2,21.9,21.1,23.8,21.5,21.5], conf: [0.73,0.88,0.72,0.98,0.95,0.89,0.75,0.81,0.96,0.85,0.74,0.97,0.77,0.91,0.79,0.88,0.85,0.75,0.75,0.84] },
+        'FCU-S1102':  { health: 71, data: [22.1,22.9,20.6,23.7,21.8,21.6,21.2,23.4,22.4,22.7,20.1,21.1,22.2,21.2,22.3,23.4,20.4,21.3,20.6,20.1], conf: [0.97,0.84,0.84,0.86,0.88,0.93,0.91,0.93,0.85,0.87,0.72,0.81,0.91,0.71,0.81,0.79,0.72,0.9,0.89,0.75] },
+        'FCU-S1103':  { health: 75, data: [21.4,22.1,23.8,23.6,23.6,21.2,21.9,23.4,20.4,22.8,23.4,23.4,22.2,23.5,22.9,20.7,21.3,22.5,20.3,23.6], conf: [0.73,0.73,0.86,0.81,0.88,0.87,0.82,0.82,0.82,0.93,0.92,0.84,0.91,0.87,0.86,0.72,0.79,0.78,0.75,0.71] },
+        'FCU-S1104':  { health: 83, data: [23.7,23.9,23.3,23.2,23.5,22.1,23.3,22.0,23.0,22.1,23.7,21.1,22.5,23.4,21.6,23.9,22.3,20.4,20.3,23.7], conf: [0.97,0.85,0.76,0.77,0.75,0.79,0.95,0.73,0.82,0.84,0.89,0.73,0.82,0.88,0.78,0.87,0.74,0.74,0.92,0.91] },
+        'FCU-S501':  { health: 95, data: [20.5,22.5,22.3,22.0,20.3,23.9,22.1,22.2,21.7,22.7,20.8,22.2,23.3,23.3,21.7,20.3,20.1,22.3,22.9,23.8], conf: [0.97,0.77,0.83,0.74,0.93,0.72,0.76,0.96,0.92,0.96,0.86,0.78,0.88,0.77,0.9,0.79,0.92,0.9,0.88,0.73] },
+        'FCU-S502':  { health: 71, data: [22.7,22.0,20.4,21.6,22.5,23.6,21.4,24.0,23.3,20.1,23.5,21.7,21.9,20.4,21.6,21.0,20.9,22.7,21.3,21.9], conf: [0.82,0.73,0.91,0.75,0.78,0.88,0.93,0.96,0.82,0.9,0.77,0.72,0.88,0.88,0.74,0.97,0.8,0.97,0.85,0.75] },
+        'FCU-S503':  { health: 83, data: [20.6,21.5,22.1,22.7,22.9,21.9,23.0,21.9,22.2,20.9,21.5,20.3,22.1,22.4,21.6,23.1,23.7,21.3,22.9,22.9], conf: [0.75,0.88,0.97,0.82,0.82,0.78,0.9,0.82,0.98,0.96,0.83,0.98,0.73,0.92,0.98,0.88,0.97,0.78,0.78,0.98] },
+        'FCU-S901':  { health: 92, data: [20.4,22.1,21.1,23.1,21.6,23.2,20.5,22.6,20.2,23.9,21.4,20.9,23.2,23.2,23.4,23.3,22.8,23.0,23.7,20.3], conf: [0.72,0.88,0.83,0.73,0.76,0.96,0.8,0.84,0.98,0.88,0.71,0.92,0.8,0.95,0.73,0.77,0.9,0.78,0.96,0.91] },
+        'FCU-S902':  { health: 70, data: [23.6,22.0,20.6,22.9,20.9,21.5,20.2,23.8,24.0,23.6,21.7,20.1,23.6,22.9,20.0,21.1,21.4,23.9,23.8,20.1], conf: [0.85,0.83,0.9,0.89,0.72,0.86,0.93,0.9,0.75,0.88,0.71,0.82,0.77,0.79,0.88,0.93,0.85,0.9,0.93,0.8] },
+        'FCU-S903':  { health: 97, data: [23.2,20.5,21.8,23.1,22.1,23.6,23.4,20.6,23.3,23.4,23.9,21.6,20.1,21.0,21.7,20.3,21.3,21.6,21.1,21.1], conf: [0.84,0.82,0.71,0.83,0.95,0.79,0.87,0.89,0.9,0.93,0.83,0.94,0.84,0.86,0.86,0.84,0.96,0.98,0.72,0.78] },
+        'FCU-S904':  { health: 71, data: [23.4,21.7,23.4,22.4,21.3,22.2,20.2,20.9,22.9,23.2,21.5,21.9,22.6,22.1,22.8,22.6,23.5,23.6,20.4,23.8], conf: [0.79,0.9,0.88,0.94,0.87,0.71,0.72,0.77,0.84,0.78,0.91,0.84,0.81,0.89,0.83,0.94,0.76,0.91,0.94,0.73] },
+        'FCU-S905':  { health: 73, data: [22.0,23.4,21.0,22.0,20.8,21.2,24.0,23.9,20.8,21.5,23.7,21.7,23.1,21.9,20.1,23.8,22.4,22.6,22.2,23.5], conf: [0.85,0.76,0.81,0.88,0.87,0.91,0.85,0.89,0.97,0.84,0.88,0.82,0.85,0.72,0.97,0.77,0.95,0.84,0.71,0.83] },
+        'HWP-001':  { health: 88, data: [7.8,5.7,6.2,9.0,8.3,5.5,8.2,7.7,6.2,6.9,7.0,6.0,7.8,8.3,8.5,6.8,8.5,6.7,8.8,6.9], conf: [0.89,0.86,0.74,0.93,0.75,0.73,0.92,0.89,0.72,0.95,0.83,0.83,0.77,0.98,0.74,0.84,0.97,0.84,0.97,0.75] }
     };
     var currentPredictionDevice = 'AHU-703';
 
 
+    // R32: Searchable device multi-select for Prediction Rule Analysis
+    var predSelectedDevices = ['AHU-703'];
+    var predDropdownOpen = false;
+
+    function buildPredDeviceDropdownList() {
+        var dropdown = document.getElementById('predDeviceDropdown');
+        if (!dropdown) return;
+        var html = '';
+        var allDevs = [];
+        // Collect from predDeviceConfig
+        for (var devId in predDeviceConfig) {
+            allDevs.push({ id: devId, health: predDeviceConfig[devId].health });
+        }
+        allDevs.sort(function(a, b) { return a.id.localeCompare(b.id); });
+        allDevs.forEach(function(dev) {
+            var checked = predSelectedDevices.indexOf(dev.id) >= 0 ? ' checked' : '';
+            var checkedClass = checked ? ' checked' : '';
+            var healthColor = dev.health >= 90 ? 'var(--success)' : dev.health >= 75 ? 'var(--warning)' : 'var(--danger)';
+            var eqType = dev.id.startsWith('AHU') ? 'AHU' : dev.id.startsWith('FCU') ? 'FCU' : 'CH';
+            html += '<div class="pred-device-dropdown-item' + checkedClass + '" data-dev-id="' + dev.id + '">' +
+                '<input type="checkbox" value="' + dev.id + '"' + checked + ' data-dev-cb="' + dev.id + '">' +
+                '<span style="font-weight:600;">' + dev.id + '</span>' +
+                '<span class="ddi-type">' + eqType + '</span>' +
+                '<span class="ddi-building"><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:' + healthColor + ';margin-right:3px;"></span>' + dev.health + '%</span>' +
+                '</div>';
+        });
+        dropdown.innerHTML = html;
+    }
+
+    function togglePredDeviceDropdown() {
+        predDropdownOpen = !predDropdownOpen;
+        var dropdown = document.getElementById('predDeviceDropdown');
+        var searchInput = document.getElementById('predDeviceSearchInput');
+        if (predDropdownOpen) {
+            buildPredDeviceDropdownList();
+            dropdown.style.display = 'block';
+            searchInput.style.display = 'block';
+            searchInput.value = '';
+            searchInput.focus();
+        } else {
+            dropdown.style.display = 'none';
+            searchInput.style.display = 'none';
+        }
+    }
+
+    function togglePredDevice(devId) {
+        var idx = predSelectedDevices.indexOf(devId);
+        if (idx >= 0) {
+            predSelectedDevices.splice(idx, 1);
+        } else {
+            predSelectedDevices.push(devId);
+        }
+        // Update visual
+        var item = document.querySelector('[data-dev-id="' + devId + '"]');
+        if (item) {
+            item.classList.toggle('checked');
+            var cb = item.querySelector('input[type="checkbox"]');
+            if (cb) cb.checked = predSelectedDevices.indexOf(devId) >= 0;
+        }
+        updatePredDeviceCount();
+        updatePredictionRuleCharts();
+    }
+
+    function updatePredDeviceCount() {
+        var el = document.getElementById('predDeviceSelectedCount');
+        if (el) {
+            el.textContent = predSelectedDevices.length + ' selected';
+            el.style.color = predSelectedDevices.length > 0 ? 'var(--accent)' : 'var(--text-muted)';
+            el.style.fontWeight = predSelectedDevices.length > 0 ? '600' : '400';
+        }
+    }
+
+    function filterPredDeviceDropdown(query) {
+        var q = query.toLowerCase().trim();
+        var items = document.querySelectorAll('.pred-device-dropdown-item');
+        items.forEach(function(item) {
+            var devId = item.getAttribute('data-dev-id') || '';
+            item.classList.toggle('hidden', q && devId.toLowerCase().indexOf(q) < 0);
+        });
+    }
+
+    function handlePredDeviceKeydown(e) {
+        if (e.key === 'Escape') {
+            togglePredDeviceDropdown();
+        }
+    }
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!predDropdownOpen) return;
+        var container = document.getElementById('predDeviceSelector');
+        if (container && !container.contains(e.target)) {
+            predDropdownOpen = false;
+            var dropdown = document.getElementById('predDeviceDropdown');
+            var searchInput = document.getElementById('predDeviceSearchInput');
+            if (dropdown) dropdown.style.display = 'none';
+            if (searchInput) searchInput.style.display = 'none';
+        }
+        // Handle checkbox clicks inside dropdown via delegation
+        var cb = e.target.closest('[data-dev-cb]');
+        if (cb) {
+            e.stopPropagation();
+            togglePredDevice(cb.getAttribute('data-dev-cb'));
+        }
+    });
+
+    // R32: Dynamic device sidebar - populate from predDeviceConfig
+    function buildDeviceSidebar() {
+        var sidebar = document.querySelector('#page-aiPrediction .device-sidebar');
+        if (!sidebar) return;
+        var container = sidebar.querySelector('.device-sidebar-items-container');
+        if (!container) {
+            // Create container after header
+            var header = sidebar.querySelector('.device-sidebar-header');
+            if (header) {
+                container = document.createElement('div');
+                container.className = 'device-sidebar-items-container';
+                header.parentNode.insertBefore(container, header.nextSibling);
+                // Remove old static items
+                sidebar.querySelectorAll('.device-sidebar-item').forEach(function(item) { item.remove(); });
+            }
+        }
+        if (!container) return;
+        var html = '';
+        var allDevs = [];
+        for (var devId in predDeviceConfig) {
+            allDevs.push({ id: devId, health: predDeviceConfig[devId].health, level: predDeviceConfig[devId].level });
+        }
+        allDevs.sort(function(a, b) { return a.id.localeCompare(b.id); });
+        allDevs.forEach(function(dev) {
+            var isActive = dev.id === currentPredictionDevice ? ' active' : '';
+            var healthColor = dev.health >= 90 ? 'var(--success)' : dev.health >= 75 ? 'var(--warning)' : 'var(--danger)';
+            var eqType = dev.id.startsWith('AHU') ? 'AHU' : dev.id.startsWith('FCU') ? 'FCU' : 'CH';
+            var location = dev.level > 0 ? ('Level ' + dev.level) : 'Plant Room';
+            html += '<div class="device-sidebar-item' + isActive + '" data-sidebar-dev="' + dev.id + '">' +
+                '<span class="dsi-dot" style="background:' + healthColor + '"></span>' +
+                '<div><div class="dsi-name">' + dev.id + '</div><div class="dsi-sub">' + location + ' - ' + dev.health + '% Health</div></div>' +
+                '</div>';
+        });
+        container.innerHTML = html;
+        updatePredDeviceCount();
+    }
+
+    // Event delegation for sidebar device clicks
+    document.addEventListener('click', function(e) {
+        var sidebarItem = e.target.closest('.device-sidebar-item[data-sidebar-dev]');
+        if (sidebarItem) {
+            var devId = sidebarItem.getAttribute('data-sidebar-dev');
+            var allItems = sidebarItem.parentNode.querySelectorAll('.device-sidebar-item');
+            allItems.forEach(function(i) { i.classList.remove('active'); });
+            sidebarItem.classList.add('active');
+            currentPredictionDevice = devId;
+            var satTitle = document.querySelector('#page-aiPrediction .sat-trend-title');
+            if (satTitle) satTitle.textContent = 'SAT (Supply Air Temperature) Trend - ' + devId;
+            drawPredictionChart();
+        }
+    });
+
     function filterDeviceSidebar(query) {
         var q = query.toLowerCase().trim();
-        document.querySelectorAll('.device-sidebar-item').forEach(function(item) {
+        document.querySelectorAll('.device-sidebar-item[data-sidebar-dev]').forEach(function(item) {
             var name = item.querySelector('.dsi-name');
             if (!name) return;
             var txt = name.textContent.toLowerCase();
@@ -8247,14 +8433,60 @@ function addELogEntry() {
         'FMC-AH-DAT-05': { name: 'Discharge Air Temp', abbr: 'DAT = Discharge Air Temperature Exhaust Air Temp', sensor: 'Discharge Air Temp', unit: '°C', baseVal: 14, threshold: 18, color: '#EF4444' }
     };
     var predDeviceConfig = {
-        'AHU-703':  { level: 7, health: 92, seed: 1.0 },
-        'AHU-707':  { level: 7, health: 76, seed: 1.7 },
-        'AHU-1301': { level: 13, health: 94, seed: 2.3 },
-        'AHU-1305': { level: 13, health: 91, seed: 3.1 },
-        'CH-001':   { level: 0, health: 96, seed: 4.5 },
-        'CH-002':   { level: 0, health: 95, seed: 5.2 }
+        'AHU-1101':  { level: 1, health: 92, seed: 1.0 },
+        'AHU-1301':  { level: 1, health: 94, seed: 2.7 },
+        'AHU-1305':  { level: 1, health: 89, seed: 4.4 },
+        'AHU-1501':  { level: 1, health: 81, seed: 6.1 },
+        'AHU-303':  { level: 7, health: 88, seed: 7.8 },
+        'AHU-501':  { level: 5, health: 90, seed: 9.5 },
+        'AHU-503':  { level: 5, health: 88, seed: 11.2 },
+        'AHU-703':  { level: 7, health: 96, seed: 12.9 },
+        'AHU-707':  { level: 7, health: 84, seed: 14.6 },
+        'AHU-712':  { level: 7, health: 82, seed: 16.3 },
+        'AHU-901':  { level: 9, health: 87, seed: 18.0 },
+        'AHU-A01':  { level: 1, health: 81, seed: 19.7 },
+        'AHU-A02':  { level: 2, health: 71, seed: 21.4 },
+        'CH-CH-001':  { level: 0, health: 72, seed: 23.1 },
+        'CH-CH-002':  { level: 0, health: 72, seed: 24.8 },
+        'CT-001':  { level: 0, health: 75, seed: 26.5 },
+        'CWP-001':  { level: 0, health: 89, seed: 28.2 },
+        'CWP-002':  { level: 0, health: 88, seed: 29.9 },
+        'FCU-A101':  { level: 7, health: 86, seed: 31.6 },
+        'FCU-A102':  { level: 7, health: 96, seed: 33.3 },
+        'FCU-A103':  { level: 7, health: 71, seed: 35.0 },
+        'FCU-A104':  { level: 7, health: 91, seed: 36.7 },
+        'FCU-A201':  { level: 2, health: 72, seed: 38.4 },
+        'FCU-A202':  { level: 2, health: 90, seed: 40.1 },
+        'FCU-A203':  { level: 2, health: 93, seed: 41.8 },
+        'FCU-A204':  { level: 2, health: 80, seed: 43.5 },
+        'FCU-B301':  { level: 7, health: 92, seed: 45.2 },
+        'FCU-B302':  { level: 7, health: 84, seed: 46.9 },
+        'FCU-B303':  { level: 7, health: 83, seed: 48.6 },
+        'FCU-B304':  { level: 7, health: 88, seed: 50.3 },
+        'FCU-B305':  { level: 7, health: 90, seed: 52.0 },
+        'FCU-G1301':  { level: 13, health: 91, seed: 53.7 },
+        'FCU-G1302':  { level: 7, health: 85, seed: 55.4 },
+        'FCU-G1501':  { level: 15, health: 84, seed: 57.1 },
+        'FCU-G1502':  { level: 7, health: 85, seed: 58.8 },
+        'FCU-G1503':  { level: 7, health: 93, seed: 60.5 },
+        'FCU-G701':  { level: 7, health: 73, seed: 62.2 },
+        'FCU-G702':  { level: 7, health: 77, seed: 63.9 },
+        'FCU-G703':  { level: 7, health: 74, seed: 65.6 },
+        'FCU-G704':  { level: 7, health: 89, seed: 67.3 },
+        'FCU-S1101':  { level: 11, health: 80, seed: 69.0 },
+        'FCU-S1102':  { level: 7, health: 71, seed: 70.7 },
+        'FCU-S1103':  { level: 7, health: 75, seed: 72.4 },
+        'FCU-S1104':  { level: 7, health: 83, seed: 74.1 },
+        'FCU-S501':  { level: 7, health: 95, seed: 75.8 },
+        'FCU-S502':  { level: 7, health: 71, seed: 77.5 },
+        'FCU-S503':  { level: 7, health: 83, seed: 79.2 },
+        'FCU-S901':  { level: 9, health: 92, seed: 80.9 },
+        'FCU-S902':  { level: 7, health: 70, seed: 82.6 },
+        'FCU-S903':  { level: 7, health: 97, seed: 84.3 },
+        'FCU-S904':  { level: 7, health: 71, seed: 86.0 },
+        'FCU-S905':  { level: 7, health: 73, seed: 87.7 },
+        'HWP-001':  { level: 0, health: 88, seed: 89.4 }
     };
-
     function getSelectedDevices() {
         var pills = document.getElementById('predDevicePills');
         if (!pills) return [];
